@@ -11,9 +11,9 @@ import {
   Plus,
   Pencil,
   Trash2,
-  Youtube,
-  Images,
-  MessageSquareQuote,
+  Video,
+  Image as ImageIcon,
+  MessageCircle,
   Phone,
   BarChart3,
 } from 'lucide-react'
@@ -112,11 +112,11 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: 'registrations', label: 'การลงทะเบียน', icon: Users },
   { id: 'stats', label: 'สถิติแดชบอร์ด', icon: BarChart3 },
-  { id: 'youtube', label: 'วิดีโอหน้าปก', icon: Youtube },
-  { id: 'gallery', label: 'แกลเลอรี / สไลด์', icon: Images },
+  { id: 'youtube', label: 'วิดีโอหน้าปก', icon: Video },
+  { id: 'gallery', label: 'แกลเลอรี / สไลด์', icon: ImageIcon },
   { id: 'packages', label: 'แพ็กเกจ', icon: PackageIcon },
   { id: 'articles', label: 'คลังความรู้', icon: BookOpen },
-  { id: 'testimonials', label: 'ความประทับใจ', icon: MessageSquareQuote },
+  { id: 'testimonials', label: 'ความประทับใจ', icon: MessageCircle },
   { id: 'staff', label: 'เบอร์ติดต่อ', icon: Phone },
   { id: 'company', label: 'ข้อมูลบริษัท', icon: Building2 },
 ]
