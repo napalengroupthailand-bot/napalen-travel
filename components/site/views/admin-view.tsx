@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Lock,
   LogOut,
@@ -50,10 +50,51 @@ const STATUS_STYLES: Record<RegStatus, string> = {
   cancelled: 'bg-rose-100 text-rose-700',
 }
 
+const ADMIN_AUTH_KEY = 'napalen-admin-authed'
+
 export function AdminView() {
   const [authed, setAuthed] = useState(false)
-  if (!authed) return <AdminLogin onSuccess={() => setAuthed(true)} />
-  return <AdminDashboard onLogout={() => setAuthed(false)} />
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(ADMIN_AUTH_KEY) === '1') {
+        setAuthed(true)
+      }
+    } catch {
+      /* ignore */
+    }
+    setReady(true)
+  }, [])
+
+  const login = () => {
+    try {
+      localStorage.setItem(ADMIN_AUTH_KEY, '1')
+    } catch {
+      /* ignore */
+    }
+    setAuthed(true)
+  }
+
+  const logout = () => {
+    try {
+      localStorage.removeItem(ADMIN_AUTH_KEY)
+    } catch {
+      /* ignore */
+    }
+    setAuthed(false)
+  }
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted-foreground">
+        กำลังโหลด...
+      </div>
+    )
+  }
+
+  if (!authed) return <AdminLogin onSuccess={login} />
+  return <AdminDashboard onLogout={logout} />
 }
 
 function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
