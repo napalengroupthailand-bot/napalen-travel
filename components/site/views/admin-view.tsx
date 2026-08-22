@@ -144,7 +144,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         <button type="submit" className="mt-6 w-full rounded-lg bg-royal-blue px-6 py-3 font-semibold text-bright-sky transition hover:bg-deep-blue">
           เข้าสู่ระบบ
         </button>
-        <p className="mt-4 text-center text-xs text-muted-foreground">ผู้ใช้ทดสอบ: napalen / 1234</p>
+      
       </form>
     </div>
   )
