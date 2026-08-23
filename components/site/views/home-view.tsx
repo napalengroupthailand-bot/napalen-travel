@@ -47,7 +47,7 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-   {videoStarted && embedSrc ? (
+    {videoStarted && embedSrc ? (
     <div className="absolute inset-0 overflow-hidden">
       <iframe
         key={embedSrc}
@@ -55,11 +55,15 @@ export function HomeView() {
         title="Hero video"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+        className="pointer-events-none absolute border-0"
         style={{
-          transform: isMobile
-            ? 'translate(-50%, -50%) scale(1.2)'
-            : 'translate(-50%, -50%) scale(1.5)',
+          top: '50%',
+          left: '50%',
+          width: '100vw',
+          height: '56.25vw',
+          minHeight: '100%',
+          minWidth: '177.78vh',
+          transform: 'translate(-50%, -50%)',
         }}
       />
     </div>
