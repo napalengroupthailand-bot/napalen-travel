@@ -43,26 +43,14 @@ export function AppShell() {
     <StoreProvider>
       <ToastProvider>
         <NavContext.Provider value={{ view, articleId, packageId, navigate }}>
-         <div className="flex min-h-screen flex-col bg-background text-foreground">
-  <TopBar />
-  <Navbar />
-  <CalendarRibbon />
-  <main className="flex-1 pb-16 lg:pb-0">
-    <div style={{ display: view === 'home' ? 'block' : 'none' }}>
-      <HomeView />
-    </div>
-
-    {view === 'hajj' && <ServiceView type="hajj" />}
-    {view === 'umrah' && <ServiceView type="umrah" />}
-    {view === 'knowledge' && <KnowledgeView />}
-    {view === 'article' && <ArticleView articleId={articleId} />}
-    {view === 'package' && <PackageDetailView packageId={packageId} />}
-    {view === 'contact' && <ContactView />}
-    {view === 'admin' && <AdminView />}
-  </main>
-  <Footer />
-  <MobileBottomNav />
-</div>
+          <div className="flex min-h-screen flex-col bg-background text-foreground">
+            <TopBar />
+            <Navbar />
+            <CalendarRibbon />
+            <main className="flex-1 pb-16 lg:pb-0">
+              <div style={{ display: view === 'home' ? 'block' : 'none' }}>
+                <HomeView />
+              </div>
 
               {view === 'hajj' && <ServiceView type="hajj" />}
               {view === 'umrah' && <ServiceView type="umrah" />}
@@ -73,6 +61,7 @@ export function AppShell() {
               {view === 'admin' && <AdminView />}
             </main>
             <Footer />
+            <MobileBottomNav />
           </div>
         </NavContext.Provider>
       </ToastProvider>
