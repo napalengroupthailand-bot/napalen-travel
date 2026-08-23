@@ -30,8 +30,8 @@ export function HomeView() {
 
   return (
     <div>
-     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-  {embedSrc ? (
+    <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+  {embedSrc && videoStarted ? (
     <div className="pointer-events-none absolute inset-0 scale-150">
       <iframe
         key={embedSrc}
@@ -39,21 +39,37 @@ export function HomeView() {
         title="Hero video"
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
-        playsInline
         className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
       />
     </div>
   ) : (
-    <img
-      src="/images/hero-kaaba.png"
-      alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
-      className="absolute inset-0 size-full object-cover"
-    />
+    <>
+      <img
+        src={ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : '/images/hero-kaaba.png'}
+        alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
+        className="absolute inset-0 size-full object-cover"
+        onError={(e) => {
+          ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
+        }}
+      />
+      {ytId && (
+        <button
+          type="button"
+          onClick={() => setVideoStarted(true)}
+          className="absolute z-20 flex size-16 items-center justify-center rounded-full bg-red-600/90 text-white shadow-xl transition hover:scale-105 hover:bg-red-600 sm:size-20"
+          aria-label="เล่นวิดีโอ"
+        >
+          <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current sm:size-10">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+      )}
+    </>
   )}
-  <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90" />
 
-  {/* ปุ่มเปิด/ปิดเสียง — มือถือและเดสก์ท็อป */}
-  {ytId && (
+  <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
+
+  {ytId && videoStarted && (
     <button
       type="button"
       onClick={() => setMuted((m) => !m)}
@@ -64,6 +80,8 @@ export function HomeView() {
       <span className="hidden sm:inline">{muted ? 'เปิดเสียง' : 'ปิดเสียง'}</span>
     </button>
   )}
+
+  {/* เนื้อหาข้อความ + ปุ่มสมัคร เดิม ใส่ class relative z-10 ไว้ตามเดิม */}
 
   {/* เนื้อหาเดิม ... */}
         <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
