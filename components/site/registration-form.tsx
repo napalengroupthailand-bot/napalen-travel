@@ -1,12 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Send } from 'lucide-react'
 import { useStore } from './store'
 import { useToast } from './toast'
 import type { PackageType } from '@/lib/site-data'
 
-export function RegistrationForm({ type }: { type: PackageType }) {
+export function RegistrationForm({
+  type,
+  defaultPackageName,
+}: {
+  type: PackageType
+  defaultPackageName?: string
+}) {
   const { packages, addRegistration } = useStore()
   const { notify } = useToast()
   const options = packages.filter((p) => p.type === type)
@@ -16,9 +22,15 @@ export function RegistrationForm({ type }: { type: PackageType }) {
     phone: '',
     email: '',
     pax: '1',
-    packageName: options[0]?.name ?? '',
+    packageName: defaultPackageName || options[0]?.name || '',
     note: '',
   })
+
+  useEffect(() => {
+    if (defaultPackageName) {
+      setForm((f) => ({ ...f, packageName: defaultPackageName }))
+    }
+  }, [defaultPackageName])
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }))
 
@@ -38,7 +50,14 @@ export function RegistrationForm({ type }: { type: PackageType }) {
       note: form.note,
     })
     notify('ลงทะเบียนสำเร็จ! ทีมงานจะติดต่อกลับโดยเร็วที่สุด อินชาอัลลอฮ์')
-    setForm({ name: '', phone: '', email: '', pax: '1', packageName: options[0]?.name ?? '', note: '' })
+    setForm({
+      name: '',
+      phone: '',
+      email: '',
+      pax: '1',
+      packageName: defaultPackageName || options[0]?.name || '',
+      note: '',
+    })
   }
 
   const label = type === 'hajj' ? 'ฮัจญ์' : 'อุมเราะห์'
