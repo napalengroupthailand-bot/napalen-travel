@@ -328,8 +328,12 @@ export function youtubeEmbedUrl(input: string, muted: boolean): string {
     rel: '0',
     modestbranding: '1',
     playsinline: '1',
+    enablejsapi: '1',
+    // ช่วยบนมือถือบางเครื่อง
+    origin: typeof window !== 'undefined' ? window.location.origin : '',
   })
-  return `https://www.youtube.com/embed/${id}?${params.toString()}`
+  // ใช้ youtube-nocookie บางที autoplay ดีกว่า
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`
 }
 
 export const COMPANY_LOGO =
