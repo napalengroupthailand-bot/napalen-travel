@@ -15,7 +15,7 @@ export function TopBar() {
           <span className="flex items-center gap-1.5">
             <MapPin className="size-3.5 text-luxury-gold" />
             <span className="hidden sm:inline">{company.address}</span>
-            <span className="sm:hidden"> นาปาเลน แทรเวิล แอนด์ ทัวร์ ร้านอัลวาเฟอร์นิเจอร์ (เยื้องโลตัสควนโดน) 49 หมู่ 4 ต.ย่านซื่อ อ.ควนโดน จ.สตูล 91160</span>
+            <span className="sm:hidden">49 หมู่ 4 ต.ย่านซื่อ อ.ควนโดน จ.สตูล 91160</span>
           </span>
           <a href={`tel:${company.phone}`} className="flex items-center gap-1.5 hover:text-luxury-gold">
             <Phone className="size-3.5 text-luxury-gold" />
