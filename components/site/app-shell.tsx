@@ -15,6 +15,7 @@ import { ArticleView } from '@/components/site/views/article-view'
 import { ContactView } from '@/components/site/views/contact-view'
 import { AdminView } from '@/components/site/views/admin-view'
 import { PackageDetailView } from '@/components/site/views/package-detail-view'
+import { MobileBottomNav } from '@/components/site/mobile-bottom-nav'
 
 export function AppShell() {
   const [view, setView] = useState<View>('home')
@@ -42,14 +43,26 @@ export function AppShell() {
     <StoreProvider>
       <ToastProvider>
         <NavContext.Provider value={{ view, articleId, packageId, navigate }}>
-          <div className="flex min-h-screen flex-col bg-background text-foreground">
-            <TopBar />
-            <Navbar />
-            <CalendarRibbon />
-            <main className="flex-1">
-              <div style={{ display: view === 'home' ? 'block' : 'none' }}>
-                <HomeView />
-              </div>
+         <div className="flex min-h-screen flex-col bg-background text-foreground">
+  <TopBar />
+  <Navbar />
+  <CalendarRibbon />
+  <main className="flex-1 pb-16 lg:pb-0">
+    <div style={{ display: view === 'home' ? 'block' : 'none' }}>
+      <HomeView />
+    </div>
+
+    {view === 'hajj' && <ServiceView type="hajj" />}
+    {view === 'umrah' && <ServiceView type="umrah" />}
+    {view === 'knowledge' && <KnowledgeView />}
+    {view === 'article' && <ArticleView articleId={articleId} />}
+    {view === 'package' && <PackageDetailView packageId={packageId} />}
+    {view === 'contact' && <ContactView />}
+    {view === 'admin' && <AdminView />}
+  </main>
+  <Footer />
+  <MobileBottomNav />
+</div>
 
               {view === 'hajj' && <ServiceView type="hajj" />}
               {view === 'umrah' && <ServiceView type="umrah" />}
