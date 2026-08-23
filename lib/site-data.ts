@@ -329,13 +329,16 @@ export function youtubeEmbedUrl(input: string, muted: boolean): string {
     modestbranding: '1',
     playsinline: '1',
     enablejsapi: '1',
-    // ช่วยบนมือถือบางเครื่อง
-    origin: typeof window !== 'undefined' ? window.location.origin : '',
+    fs: '0',
+    iv_load_policy: '3',
   })
-  // ใช้ youtube-nocookie บางที autoplay ดีกว่า
-  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`
+  // origin ใส่เฉพาะฝั่ง client เพื่อไม่ให้ SSR พัง และช่วย autoplay บนมือถือ
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    params.set('origin', window.location.origin)
+  }
+  // youtube.com มักเล่นบนมือถือเสถียรกว่า nocookie ในบางเครื่อง
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`
 }
-
 export const COMPANY_LOGO =
   'https://lh3.googleusercontent.com/d/1V-1s8NFE6DMTl3fKOJv0DKGifNam1r1e'
 
