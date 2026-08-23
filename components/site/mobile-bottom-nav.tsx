@@ -1,11 +1,11 @@
 'use client'
 
-import { Home, Mosque, BookOpen, Plane } from 'lucide-react'
+import { Home, Landmark, BookOpen, Plane } from 'lucide-react'
 import { useNav, type View } from './nav'
 
 const ITEMS: { view: View; label: string; icon: typeof Home }[] = [
   { view: 'home', label: 'หน้าแรก', icon: Home },
-  { view: 'hajj', label: 'ฮัจญ์', icon: Mosque },
+  { view: 'hajj', label: 'ฮัจญ์', icon: Landmark },
   { view: 'umrah', label: 'อุมเราะห์', icon: Plane },
   { view: 'knowledge', label: 'ความรู้', icon: BookOpen },
 ]
@@ -13,18 +13,12 @@ const ITEMS: { view: View; label: string; icon: typeof Home }[] = [
 export function MobileBottomNav() {
   const { view, navigate } = useNav()
 
-  // ซ่อนตอนอยู่หน้า admin
   if (view === 'admin') return null
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-luxury-gold/20 bg-deep-blue/95 backdrop-blur-md lg:hidden">
-      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-1 pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-luxury-gold/30 bg-deep-blue shadow-[0_-4px_20px_rgba(0,0,0,0.25)] lg:hidden">
+      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-2 pt-2 pb-[max(12px,env(safe-area-inset-bottom))]">
         {ITEMS.map((item) => {
-          const active =
-            view === item.view ||
-            (item.view === 'hajj' && view === 'package') ||
-            (item.view === 'knowledge' && view === 'article')
-          // package detail: highlight ตาม type จะยาก — เน้น home/hajj/umrah/knowledge อย่างง่าย
           const isActive =
             view === item.view ||
             (view === 'article' && item.view === 'knowledge')
@@ -34,16 +28,14 @@ export function MobileBottomNav() {
               <button
                 type="button"
                 onClick={() => navigate(item.view)}
-                className={`flex w-full flex-col items-center gap-0.5 py-2.5 text-[10px] font-medium transition ${
+                className={`flex w-full flex-col items-center gap-1 rounded-xl py-2.5 transition ${
                   isActive
-                    ? 'text-luxury-gold'
-                    : 'text-bright-sky/60 hover:text-bright-sky'
+                    ? 'bg-white/10 text-luxury-gold'
+                    : 'text-bright-sky/70 active:bg-white/5'
                 }`}
               >
-                <item.icon
-                  className={`size-5 ${isActive ? 'stroke-[2.5]' : ''}`}
-                />
-                {item.label}
+                <item.icon className={`size-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                <span className="text-xs font-semibold">{item.label}</span>
               </button>
             </li>
           )
