@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { ArrowRight, MessageCircle, MapPin, Quote, Users, Award, Heart, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useStore } from '../store'
 import { useNav } from '../nav'
@@ -12,13 +12,16 @@ export function HomeView() {
   const { navigate } = useNav()
   const [muted, setMuted] = useState(true)
   const [videoStarted, setVideoStarted] = useState(false)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
   const [isMobile, setIsMobile] = useState(false)
   const [slide, setSlide] = useState(0)
   const gallery = settings.gallery.filter(Boolean)
   const ytId = extractYoutubeId(settings.youtubeHeroUrl)
   // สร้าง URL ตอน video เริ่มแล้วเท่านั้น (ฝั่ง client) เพื่อให้ origin + autoplay ถูกต้องบน iPhone
   const embedSrc =
-    ytId && videoStarted ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted) : ''
+  ytId && videoStarted
+    ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
+    : ''
 
   // PC → เล่นอัตโนมัติ | มือถือ → ต้องกดปุ่ม (นโยบาย iOS)
   useEffect(() => {
@@ -37,7 +40,16 @@ export function HomeView() {
     const t = setInterval(() => setSlide((s) => (s + 1) % gallery.length), 4500)
     return () => clearInterval(t)
   }, [gallery.length])
-
+  const handleStartVideo = () => {
+    setMuted(true)
+    setVideoStarted(true)
+    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, true, { controls: true })
+    requestAnimationFrame(() => {
+      if (iframeRef.current && !iframeRef.current.src) {
+        iframeRef.current.src = url
+      }
+    })
+  }
   const stats = [
     { icon: Heart, value: settings.stats.umrahCount, label: 'ผู้ไปอุมเราะห์' },
     { icon: Award, value: settings.stats.hajjCount, label: 'ผู้ไปฮัจญ์' },
@@ -47,15 +59,16 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-    {videoStarted && embedSrc ? (
+      {videoStarted ? (
     <div className="absolute inset-0 overflow-hidden">
       <iframe
-        key={embedSrc}
-        src={embedSrc}
+        ref={iframeRef}
+        key={embedSrc || 'hero-video'}
+        src={embedSrc || undefined}
         title="Hero video"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
-        className="pointer-events-none absolute border-0"
+        className={`absolute border-0 ${isMobile ? '' : 'pointer-events-none'}`}
         style={{
           top: '50%',
           left: '50%',
@@ -80,11 +93,8 @@ export function HomeView() {
       {ytId && (
         <button
           type="button"
-          onClick={() => {
-            setMuted(true)
-            setVideoStarted(true)
-          }}
-          className="absolute left-1/2 top-[42%] z-20 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition active:scale-90 hover:bg-red-700 sm:size-20"
+          onClick={handleStartVideo}
+          className="absolute left-1/2 top-[42%] z-20 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition active:scale-90 hover:bg-red-700"
           aria-label="เล่นวิดีโอ"
         >
           <svg viewBox="0 0 24 24" className="ml-1 size-10 fill-current">
