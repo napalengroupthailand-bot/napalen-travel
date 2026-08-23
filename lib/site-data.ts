@@ -342,7 +342,7 @@ export function youtubeEmbedUrl(
   }
   return `https://www.youtube.com/embed/${id}?${params.toString()}`
 }
-export const COMPANY_LOGO = 'https://ibb.co/4g4HQnx0'
+export const COMPANY_LOGO = 'https://img2.pic.in.th/logo-web2.png'
 
 /** ช่วย migrate ข้อมูลเก่า */
 export function normalizePackage(p: Partial<Package> & { image?: string }): Package {
