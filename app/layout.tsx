@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     icon: '/logo-napalen.png',
     apple: '/logo-napalen.png',
   },
-  openGraph: {
+    openGraph: {
     title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์ | NAPALEN TRAVEL & TOUR',
     description:
       'บริการฮัจญ์และอุมเราะห์ครบวงจร ด้วยความศรัทธาและมาตรฐานพรีเมียม',
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     siteName: 'NAPALEN TRAVEL & TOUR',
     images: [
       {
-        url: '/logo-napalen.png',
-        width: 512,
-        height: 512,
+        url: '/og-share.png',
+        width: 1200,
+        height: 630,
         alt: 'NAPALEN TRAVEL & TOUR',
       },
     ],
@@ -43,10 +43,10 @@ export const metadata: Metadata = {
     type: 'website',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์',
     description: 'บริการฮัจญ์และอุมเราะห์ครบวงจร',
-    images: ['/logo-napalen.png'],
+    images: ['/og-share.png'],
   },
 }
 
