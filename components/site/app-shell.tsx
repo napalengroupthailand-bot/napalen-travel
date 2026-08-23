@@ -47,7 +47,7 @@ export function AppShell() {
             <TopBar />
             <Navbar />
             <CalendarRibbon />
-            <main className="flex-1 pb-16 lg:pb-0">
+            <main className="flex-1 pb-24 lg:pb-0">
               <div style={{ display: view === 'home' ? 'block' : 'none' }}>
                 <HomeView />
               </div>
