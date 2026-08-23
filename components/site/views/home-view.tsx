@@ -11,6 +11,7 @@ export function HomeView() {
   const { company, settings } = useStore()
   const { navigate } = useNav()
   const [muted, setMuted] = useState(true)
+  const [videoStarted, setVideoStarted] = useState(false)
   const [slide, setSlide] = useState(0)
   const gallery = settings.gallery.filter(Boolean)
   const ytId = extractYoutubeId(settings.youtubeHeroUrl)
