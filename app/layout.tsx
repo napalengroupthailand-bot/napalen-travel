@@ -22,8 +22,8 @@ export const metadata: Metadata = {
   generator: 'v0.app',
   metadataBase: new URL('https://napalen-travel.vercel.app'),
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/logo-napalen.png',
+    apple: '/logo-napalen.png',
   },
   openGraph: {
     title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์ | NAPALEN TRAVEL & TOUR',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     siteName: 'NAPALEN TRAVEL & TOUR',
     images: [
       {
-        url: '/logo.png',
+        url: '/logo-napalen.png',
         width: 512,
         height: 512,
         alt: 'NAPALEN TRAVEL & TOUR',
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: 'summary',
     title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์',
     description: 'บริการฮัจญ์และอุมเราะห์ครบวงจร',
-    images: ['/logo.png'],
+    images: ['/logo-napalen.png'],
   },
 }
 
