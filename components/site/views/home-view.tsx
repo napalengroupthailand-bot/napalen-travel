@@ -12,10 +12,25 @@ export function HomeView() {
   const { navigate } = useNav()
   const [muted, setMuted] = useState(true)
   const [videoStarted, setVideoStarted] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const [slide, setSlide] = useState(0)
   const gallery = settings.gallery.filter(Boolean)
   const ytId = extractYoutubeId(settings.youtubeHeroUrl)
-  const embedSrc = ytId ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted) : ''
+  // สร้าง URL ตอน video เริ่มแล้วเท่านั้น (ฝั่ง client) เพื่อให้ origin + autoplay ถูกต้องบน iPhone
+  const embedSrc =
+    ytId && videoStarted ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted) : ''
+
+  // PC → เล่นอัตโนมัติ | มือถือ → ต้องกดปุ่ม (นโยบาย iOS)
+  useEffect(() => {
+    const mobile =
+      typeof window !== 'undefined' &&
+      (/iPhone|iPod|Android/i.test(navigator.userAgent) ||
+        (window.matchMedia && window.matchMedia('(max-width: 768px)').matches))
+    setIsMobile(!!mobile)
+    if (!mobile) {
+      setVideoStarted(true)
+    }
+  }, [])
 
   useEffect(() => {
     if (gallery.length <= 1) return
@@ -32,21 +47,26 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-  {embedSrc && videoStarted ? (
-    <div className="pointer-events-none absolute inset-0 scale-150">
+   {videoStarted && embedSrc ? (
+    <div className="absolute inset-0 overflow-hidden">
       <iframe
         key={embedSrc}
         src={embedSrc}
         title="Hero video"
-        allow="autoplay; encrypted-media; picture-in-picture"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
-        className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+        style={{
+          transform: isMobile
+            ? 'translate(-50%, -50%) scale(1.2)'
+            : 'translate(-50%, -50%) scale(1.5)',
+        }}
       />
     </div>
   ) : (
     <>
       <img
-        src={ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : '/images/hero-kaaba.png'}
+        src={ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png'}
         alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
         className="absolute inset-0 size-full object-cover"
         onError={(e) => {
@@ -56,18 +76,20 @@ export function HomeView() {
       {ytId && (
         <button
           type="button"
-          onClick={() => setVideoStarted(true)}
-          className="absolute z-20 flex size-16 items-center justify-center rounded-full bg-red-600/90 text-white shadow-xl transition hover:scale-105 hover:bg-red-600 sm:size-20"
+          onClick={() => {
+            setMuted(true)
+            setVideoStarted(true)
+          }}
+          className="absolute left-1/2 top-[42%] z-20 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition active:scale-90 hover:bg-red-700 sm:size-20"
           aria-label="เล่นวิดีโอ"
         >
-          <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current sm:size-10">
+          <svg viewBox="0 0 24 24" className="ml-1 size-10 fill-current">
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
       )}
     </>
   )}
-
   <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
 
   {ytId && videoStarted && (
