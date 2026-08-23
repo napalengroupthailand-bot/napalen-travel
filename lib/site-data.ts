@@ -316,7 +316,11 @@ export function extractYoutubeId(input: string): string {
   return trimmed
 }
 
-export function youtubeEmbedUrl(input: string, muted: boolean): string {
+export function youtubeEmbedUrl(
+  input: string,
+  muted: boolean,
+  options?: { controls?: boolean },
+): string {
   const id = extractYoutubeId(input)
   if (!id) return ''
   const params = new URLSearchParams({
@@ -324,7 +328,7 @@ export function youtubeEmbedUrl(input: string, muted: boolean): string {
     mute: muted ? '1' : '0',
     loop: '1',
     playlist: id,
-    controls: '0',
+    controls: options?.controls ? '1' : '0',
     rel: '0',
     modestbranding: '1',
     playsinline: '1',
