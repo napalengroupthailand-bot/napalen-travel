@@ -2,11 +2,19 @@
 
 import { Check, Clock, Hotel, MapPin, Star } from 'lucide-react'
 import type { Package } from '@/lib/site-data'
+import { useNav } from './nav'
 
 export function PackageCard({ pkg }: { pkg: Package }) {
+  const { navigate } = useNav()
   const cover = pkg.images?.[0] || '/placeholder.svg'
+  // แสดง highlights แค่ 4 ข้อแรก
+  const previewHighlights = (pkg.highlights || []).slice(0, 4)
+
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-luxury-gold/20 bg-card shadow-lg transition hover:-translate-y-1 hover:shadow-2xl">
+    <article
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-luxury-gold/20 bg-card shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
+      onClick={() => navigate('package', pkg.id)}
+    >
       <div className="relative h-52 overflow-hidden">
         <img
           src={cover}
@@ -42,43 +50,26 @@ export function PackageCard({ pkg }: { pkg: Package }) {
           </span>
         </div>
         <ul className="mt-4 flex-1 space-y-2">
-          {pkg.highlights.map((h) => (
+          {previewHighlights.map((h) => (
             <li key={h} className="flex items-start gap-2 text-sm text-foreground/80">
               <Check className="mt-0.5 size-4 shrink-0 text-light-cyan" />
               {h}
             </li>
           ))}
+          {(pkg.highlights?.length || 0) > 4 && (
+            <li className="text-xs text-royal-blue font-medium">+ ดูรายละเอียดเพิ่มเติม</li>
+          )}
         </ul>
-        {pkg.images && pkg.images.length > 1 && (
-          <div className="mt-3 flex gap-1.5 overflow-x-auto">
-            {pkg.images.slice(0, 5).map((src, i) => (
-              <img key={i} src={src} alt="" className="size-10 shrink-0 rounded object-cover border border-border" />
-            ))}
-          </div>
-        )}
-        {pkg.subBlocks && pkg.subBlocks.length > 0 && (
-          <div className="mt-3 space-y-2 border-t border-border pt-3">
-            {pkg.subBlocks.map((sb) => (
-              <div key={sb.id} className="text-sm">
-                <p className="font-medium text-deep-blue">{sb.title}</p>
-                {sb.content && <p className="text-xs text-muted-foreground line-clamp-2">{sb.content}</p>}
-                {sb.images.length > 0 && (
-                  <div className="mt-1 flex gap-1">
-                    {sb.images.slice(0, 3).map((src, i) => (
-                      <img key={i} src={src} alt="" className="size-8 rounded object-cover" />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-        <a
-          href="#register"
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            navigate('package', pkg.id)
+          }}
           className="mt-6 rounded-lg bg-royal-blue px-4 py-2.5 text-center text-sm font-semibold text-bright-sky transition hover:bg-deep-blue"
         >
-          สมัครแพ็กเกจนี้
-        </a>
+          ดูรายละเอียด
+        </button>
       </div>
     </article>
   )
