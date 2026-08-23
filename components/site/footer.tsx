@@ -14,16 +14,12 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
           <div className="mb-4 flex items-center gap-3">
-            <img
+                        <img
               src={COMPANY_LOGO || '/placeholder.svg'}
               alt="โลโก้บริษัท"
               width={44}
               height={44}
-              crossOrigin="anonymous"
               className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
-              onError={(e) => {
-                ;(e.currentTarget as HTMLImageElement).style.display = 'none'
-              }}
             />
             <div>
               <p className="font-semibold text-bright-sky">{company.name}</p>
