@@ -30,38 +30,42 @@ export function HomeView() {
 
   return (
     <div>
-      <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-        {embedSrc ? (
-          <div className="pointer-events-none absolute inset-0 scale-150">
-            <iframe
-              key={embedSrc}
-              src={embedSrc}
-              title="Hero video"
-              allow="autoplay; encrypted-media"
-              className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
-            />
-          </div>
-        ) : (
-          <img
-            src="/images/hero-kaaba.png"
-            alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
-            className="absolute inset-0 size-full object-cover"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90" />
+     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+  {embedSrc ? (
+    <div className="pointer-events-none absolute inset-0 scale-150">
+      <iframe
+        key={embedSrc}
+        src={embedSrc}
+        title="Hero video"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowFullScreen
+        playsInline
+        className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.78vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+      />
+    </div>
+  ) : (
+    <img
+      src="/images/hero-kaaba.png"
+      alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
+      className="absolute inset-0 size-full object-cover"
+    />
+  )}
+  <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90" />
 
-        {ytId && (
-          <button
-            type="button"
-            onClick={() => setMuted((m) => !m)}
-            className="absolute bottom-6 right-6 z-20 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 text-sm text-white backdrop-blur transition hover:bg-black/70"
-            aria-label={muted ? 'เปิดเสียง' : 'ปิดเสียง'}
-          >
-            {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-            {muted ? 'เปิดเสียง' : 'ปิดเสียง'}
-          </button>
-        )}
+  {/* ปุ่มเปิด/ปิดเสียง — มือถือและเดสก์ท็อป */}
+  {ytId && (
+    <button
+      type="button"
+      onClick={() => setMuted((m) => !m)}
+      className="absolute bottom-6 right-6 z-20 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 text-sm text-white backdrop-blur transition hover:bg-black/70"
+      aria-label={muted ? 'เปิดเสียง' : 'ปิดเสียง'}
+    >
+      {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+      <span className="hidden sm:inline">{muted ? 'เปิดเสียง' : 'ปิดเสียง'}</span>
+    </button>
+  )}
 
+  {/* เนื้อหาเดิม ... */}
         <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
           <p className="animate-float-up font-arabic text-2xl text-luxury-gold sm:text-3xl">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
