@@ -8,13 +8,15 @@ export type View =
   | 'umrah'
   | 'knowledge'
   | 'article'
+  | 'package'
   | 'contact'
   | 'admin'
 
 type NavValue = {
   view: View
   articleId: string | null
-  navigate: (view: View, articleId?: string) => void
+  packageId: string | null
+  navigate: (view: View, id?: string) => void
 }
 
 export const NavContext = createContext<NavValue | null>(null)
