@@ -24,17 +24,13 @@ export function Navbar() {
           className="flex items-center gap-3 text-left"
           aria-label="ไปหน้าแรก"
         >
-          <img
-            src={COMPANY_LOGO || '/placeholder.svg'}
-            alt="โลโก้ นาปาเลน แทรเวิล แอนด์ ทัวร์"
-            width={48}
-            height={48}
-            crossOrigin="anonymous"
-            className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
-            onError={(e) => {
-              ;(e.currentTarget as HTMLImageElement).style.display = 'none'
-            }}
-          />
+         <img
+  src={COMPANY_LOGO || '/placeholder.svg'}
+  alt="โลโก้ นาปาเลน แทรเวิล แอนด์ ทัวร์"
+  width={48}
+  height={48}
+  className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
+/>
           <div className="leading-tight">
             <p className="text-sm font-semibold text-bright-sky sm:text-base">นาปาเลน แทรเวิล</p>
             <p className="text-[10px] font-light tracking-wide text-luxury-gold sm:text-xs">
