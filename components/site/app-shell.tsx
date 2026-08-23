@@ -14,14 +14,25 @@ import { KnowledgeView } from '@/components/site/views/knowledge-view'
 import { ArticleView } from '@/components/site/views/article-view'
 import { ContactView } from '@/components/site/views/contact-view'
 import { AdminView } from '@/components/site/views/admin-view'
+import { PackageDetailView } from '@/components/site/views/package-detail-view'
 
 export function AppShell() {
   const [view, setView] = useState<View>('home')
   const [articleId, setArticleId] = useState<string | null>(null)
+  const [packageId, setPackageId] = useState<string | null>(null)
 
   const navigate = useCallback((next: View, id?: string) => {
     setView(next)
-    setArticleId(id ?? null)
+    if (next === 'article') {
+      setArticleId(id ?? null)
+      setPackageId(null)
+    } else if (next === 'package') {
+      setPackageId(id ?? null)
+      setArticleId(null)
+    } else {
+      setArticleId(null)
+      setPackageId(null)
+    }
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
@@ -30,13 +41,12 @@ export function AppShell() {
   return (
     <StoreProvider>
       <ToastProvider>
-        <NavContext.Provider value={{ view, articleId, navigate }}>
+        <NavContext.Provider value={{ view, articleId, packageId, navigate }}>
           <div className="flex min-h-screen flex-col bg-background text-foreground">
             <TopBar />
             <Navbar />
             <CalendarRibbon />
             <main className="flex-1">
-              {/* เก็บ HomeView ไว้ใน DOM เสมอ เพื่อให้วิดีโอเล่นต่อได้ */}
               <div style={{ display: view === 'home' ? 'block' : 'none' }}>
                 <HomeView />
               </div>
@@ -45,6 +55,7 @@ export function AppShell() {
               {view === 'umrah' && <ServiceView type="umrah" />}
               {view === 'knowledge' && <KnowledgeView />}
               {view === 'article' && <ArticleView articleId={articleId} />}
+              {view === 'package' && <PackageDetailView packageId={packageId} />}
               {view === 'contact' && <ContactView />}
               {view === 'admin' && <AdminView />}
             </main>
