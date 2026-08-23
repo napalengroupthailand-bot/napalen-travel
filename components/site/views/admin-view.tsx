@@ -104,7 +104,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (user === 'napalen' && pass === '1234') {
+    if (user === 'napalen' && pass === '91160') {
       notify('เข้าสู่ระบบสำเร็จ ยินดีต้อนรับผู้ดูแลระบบ')
       onSuccess()
     } else {
