@@ -20,6 +20,34 @@ export const metadata: Metadata = {
   description:
     'บริการฮัจญ์และอุมเราะห์ครบวงจร ด้วยความศรัทธาและมาตรฐานพรีเมียม โดย หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์',
   generator: 'v0.app',
+  metadataBase: new URL('https://napalen-travel.vercel.app'),
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
+  openGraph: {
+    title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์ | NAPALEN TRAVEL & TOUR',
+    description:
+      'บริการฮัจญ์และอุมเราะห์ครบวงจร ด้วยความศรัทธาและมาตรฐานพรีเมียม',
+    url: 'https://napalen-travel.vercel.app',
+    siteName: 'NAPALEN TRAVEL & TOUR',
+    images: [
+      {
+        url: '/logo.png',
+        width: 512,
+        height: 512,
+        alt: 'NAPALEN TRAVEL & TOUR',
+      },
+    ],
+    locale: 'th_TH',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'หจก. นาปาเลน แทรเวิล แอนด์ ทัวร์',
+    description: 'บริการฮัจญ์และอุมเราะห์ครบวงจร',
+    images: ['/logo.png'],
+  },
 }
 
 export const viewport: Viewport = {
