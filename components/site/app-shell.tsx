@@ -36,7 +36,11 @@ export function AppShell() {
             <Navbar />
             <CalendarRibbon />
             <main className="flex-1">
-              {view === 'home' && <HomeView />}
+              {/* เก็บ HomeView ไว้ใน DOM เสมอ เพื่อให้วิดีโอเล่นต่อได้ */}
+              <div style={{ display: view === 'home' ? 'block' : 'none' }}>
+                <HomeView />
+              </div>
+
               {view === 'hajj' && <ServiceView type="hajj" />}
               {view === 'umrah' && <ServiceView type="umrah" />}
               {view === 'knowledge' && <KnowledgeView />}
