@@ -331,12 +331,11 @@ export function youtubeEmbedUrl(input: string, muted: boolean): string {
     enablejsapi: '1',
     fs: '0',
     iv_load_policy: '3',
+    cc_load_policy: '0',
   })
-  // origin ใส่เฉพาะฝั่ง client เพื่อไม่ให้ SSR พัง และช่วย autoplay บนมือถือ
   if (typeof window !== 'undefined' && window.location?.origin) {
     params.set('origin', window.location.origin)
   }
-  // youtube.com มักเล่นบนมือถือเสถียรกว่า nocookie ในบางเครื่อง
   return `https://www.youtube.com/embed/${id}?${params.toString()}`
 }
 export const COMPANY_LOGO =
