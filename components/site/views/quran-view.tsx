@@ -61,7 +61,7 @@ export function QuranView() {
   const [fontSize, setFontSize] = useState(26)
 
   return (
-    <div className="app-page max-w-2xl">
+    <div className="app-page page-enter max-w-2xl">
       <div className="app-header-bar">
         <button
           type="button"
