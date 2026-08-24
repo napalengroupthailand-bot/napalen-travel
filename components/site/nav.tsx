@@ -15,6 +15,7 @@ export type View =
   | 'tasbih'
   | 'hijri-calendar'
   | 'quran'
+  | 'hotels'
 
 type NavValue = {
   view: View
