@@ -1,10 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowLeft, BookOpen } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { useNav } from '../nav'
 
-/** บทสั้น / ดูอาอ์ ที่ใช้บ่อยสำหรับผู้แสวงบุญ */
 const SECTIONS = [
   {
     id: 'fatiha',
@@ -25,7 +24,7 @@ const SECTIONS = [
     title: 'อัล-อิคลาศ',
     titleAr: 'سُورَةُ الْإِخْلَاص',
     ayahs: [
-      { ar: 'قُلْ هُوَ اللَّهُ أَحَدٌ', th: 'จงกล่าวเถิด (มุฮัมมัด) พระองค์คืออัลลอฮ์ ผู้ทรงเอกะ' },
+      { ar: 'قُلْ هُوَ اللَّهُ أَحَدٌ', th: 'จงกล่าวเถิด พระองค์คืออัลลอฮ์ ผู้ทรงเอกะ' },
       { ar: 'اللَّهُ الصَّمَدُ', th: 'อัลลอฮ์นั้นเป็นผู้ที่ทุกสิ่งต้องพึ่งพิง' },
       { ar: 'لَمْ يَلِدْ وَلَمْ يُولَدْ', th: 'พระองค์ไม่ทรงให้กำเนิด และไม่ถูกให้กำเนิด' },
       { ar: 'وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ', th: 'และไม่มีใครเสมอเหมือนพระองค์' },
@@ -59,26 +58,23 @@ export function QuranView() {
   const { navigate } = useNav()
   const [active, setActive] = useState(SECTIONS[0].id)
   const section = SECTIONS.find((s) => s.id === active) ?? SECTIONS[0]
-  const [fontSize, setFontSize] = useState(24)
+  const [fontSize, setFontSize] = useState(26)
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6">
-      <button
-        type="button"
-        onClick={() => navigate('home')}
-        className="mb-4 flex items-center gap-2 text-sm font-medium text-royal-blue"
-      >
-        <ArrowLeft className="size-4" />
-        กลับหน้าแรก
-      </button>
-
-      <div className="mb-4 flex items-center gap-2">
-        <BookOpen className="size-5 text-royal-blue" />
-        <h1 className="text-xl font-bold text-deep-blue">อัลกุรอาน & ดูอาอ์</h1>
+    <div className="app-page max-w-2xl">
+      <div className="app-header-bar">
+        <button
+          type="button"
+          onClick={() => navigate('home')}
+          className="flex size-10 items-center justify-center rounded-full bg-white shadow-sm"
+        >
+          <ArrowLeft className="size-5 text-deep-blue" />
+        </button>
+        <h1 className="flex-1 text-center text-lg font-bold text-deep-blue">อัลกุรอาน</h1>
+        <div className="w-10" />
       </div>
 
-      {/* Tabs */}
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-1">
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
         {SECTIONS.map((s) => (
           <button
             key={s.id}
@@ -86,8 +82,8 @@ export function QuranView() {
             onClick={() => setActive(s.id)}
             className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
               active === s.id
-                ? 'bg-royal-blue text-white shadow-md'
-                : 'bg-white text-deep-blue border border-border hover:bg-soft-mint'
+                ? 'bg-royal-blue text-white shadow-md shadow-royal-blue/25'
+                : 'bg-white text-deep-blue shadow-sm'
             }`}
           >
             {s.title}
@@ -96,38 +92,41 @@ export function QuranView() {
       </div>
 
       <div className="soft-card overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border bg-soft-mint/50 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-border/60 bg-soft-mint/60 px-4 py-3">
           <div>
-            <p className="font-semibold text-deep-blue">{section.title}</p>
+            <p className="font-bold text-deep-blue">{section.title}</p>
             <p className="font-arabic text-sm text-royal-blue">{section.titleAr}</p>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={() => setFontSize((s) => Math.max(18, s - 2))}
-              className="rounded-lg border border-border px-2 py-1 text-xs font-bold"
+              className="rounded-xl border border-border bg-white px-2.5 py-1 text-xs font-bold shadow-sm"
             >
               A−
             </button>
             <button
               type="button"
-              onClick={() => setFontSize((s) => Math.min(36, s + 2))}
-              className="rounded-lg border border-border px-2 py-1 text-xs font-bold"
+              onClick={() => setFontSize((s) => Math.min(40, s + 2))}
+              className="rounded-xl border border-border bg-white px-2.5 py-1 text-xs font-bold shadow-sm"
             >
               A+
             </button>
           </div>
         </div>
 
-        <div className="space-y-6 p-5">
+        <div className="space-y-7 p-5 sm:p-7">
           {section.ayahs.map((a, i) => (
-            <div key={i} className="border-b border-border/50 pb-5 last:border-0 last:pb-0">
+            <div key={i} className="border-b border-border/40 pb-6 last:border-0 last:pb-0">
               <p
-                className="font-arabic leading-[2] text-deep-blue text-right"
+                className="font-arabic leading-[2.1] text-deep-blue text-right"
                 style={{ fontSize: `${fontSize}px` }}
                 dir="rtl"
               >
                 {a.ar}
+                <span className="mr-2 inline-flex size-6 items-center justify-center rounded-full bg-royal-blue/10 text-xs font-sans text-royal-blue">
+                  {i + 1}
+                </span>
               </p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{a.th}</p>
             </div>
@@ -136,7 +135,7 @@ export function QuranView() {
       </div>
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
-        บทคัดสรรสำหรับผู้แสวงบุญ — อ่านเพิ่มเติมได้ในคลังความรู้
+        บทคัดสรรสำหรับผู้แสวงบุญ
       </p>
     </div>
   )
