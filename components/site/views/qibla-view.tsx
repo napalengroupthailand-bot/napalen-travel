@@ -1,10 +1,9 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { ArrowLeft, Compass, MapPin, RefreshCw } from 'lucide-react'
+import { ArrowLeft, MapPin, RefreshCw } from 'lucide-react'
 import { useNav } from '../nav'
 
-/** พิกัดกะอ์บะฮ์ มักกะฮ์ */
 const KAABA = { lat: 21.4225, lng: 39.8262 }
 
 function toRad(d: number) {
@@ -14,7 +13,6 @@ function toDeg(r: number) {
   return (r * 180) / Math.PI
 }
 
-/** คำนวณทิศกิบลัต (องศาจากเหนือจริง) */
 function qiblaBearing(lat: number, lng: number): number {
   const φ1 = toRad(lat)
   const φ2 = toRad(KAABA.lat)
@@ -35,22 +33,20 @@ export function QiblaView() {
   const locate = useCallback(() => {
     setError('')
     if (!navigator.geolocation) {
-      setError('อุปกรณ์ไม่รองรับ GPS')
-      // fallback กรุงเทพ
       setQibla(qiblaBearing(13.7563, 100.5018))
-      setPlace('กรุงเทพฯ (โดยประมาณ)')
+      setPlace('กรุงเทพมหานคร, ประเทศไทย')
       return
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords
         setQibla(qiblaBearing(latitude, longitude))
-        setPlace(`${latitude.toFixed(3)}°, ${longitude.toFixed(3)}°`)
+        setPlace('ตำแหน่งปัจจุบัน')
       },
       () => {
         setQibla(qiblaBearing(13.7563, 100.5018))
-        setPlace('กรุงเทพฯ (โดยประมาณ)')
-        setError('ใช้ตำแหน่งโดยประมาณ — อนุญาต GPS จะแม่นยำกว่า')
+        setPlace('กรุงเทพมหานคร, ประเทศไทย')
+        setError('ใช้ตำแหน่งโดยประมาณ')
       },
       { enableHighAccuracy: true, timeout: 10000 },
     )
@@ -62,7 +58,6 @@ export function QiblaView() {
 
   useEffect(() => {
     const onOrient = (e: DeviceOrientationEvent) => {
-      // iOS ใช้ webkitCompassHeading, Android ใช้ alpha
       let h: number | null = null
       const anyE = e as DeviceOrientationEvent & { webkitCompassHeading?: number }
       if (typeof anyE.webkitCompassHeading === 'number') {
@@ -74,7 +69,6 @@ export function QiblaView() {
     }
 
     const start = async () => {
-      // iOS 13+ ต้องขอ permission
       const DOE = DeviceOrientationEvent as unknown as {
         requestPermission?: () => Promise<string>
       }
@@ -99,125 +93,130 @@ export function QiblaView() {
   const needle =
     qibla != null && heading != null ? ((qibla - heading + 360) % 360) : qibla ?? 0
   const aligned =
-    qibla != null && heading != null && Math.abs(((qibla - heading + 540) % 360) - 180) < 8
+    qibla != null &&
+    heading != null &&
+    Math.min(
+      Math.abs(((qibla - heading + 360) % 360)),
+      360 - Math.abs(((qibla - heading + 360) % 360)),
+    ) < 8
 
   return (
-    <div className="mx-auto max-w-lg px-4 py-6">
-      <button
-        type="button"
-        onClick={() => navigate('home')}
-        className="mb-4 flex items-center gap-2 text-sm font-medium text-royal-blue"
-      >
-        <ArrowLeft className="size-4" />
-        กลับหน้าแรก
-      </button>
+    <div className="app-page min-h-[70vh]">
+      <div className="app-header-bar">
+        <button
+          type="button"
+          onClick={() => navigate('home')}
+          className="flex size-10 items-center justify-center rounded-full bg-white shadow-sm"
+          aria-label="กลับ"
+        >
+          <ArrowLeft className="size-5 text-deep-blue" />
+        </button>
+        <h1 className="flex-1 text-center text-lg font-bold text-deep-blue">ทิศกิบลัต</h1>
+        <button
+          type="button"
+          onClick={locate}
+          className="flex size-10 items-center justify-center rounded-full bg-white shadow-sm"
+          aria-label="รีเฟรช"
+        >
+          <RefreshCw className="size-4 text-royal-blue" />
+        </button>
+      </div>
 
-      <div className="soft-card overflow-hidden">
-        <div className="bg-gradient-to-br from-deep-blue to-royal-blue px-5 py-4 text-bright-sky">
-          <h1 className="flex items-center gap-2 text-lg font-bold">
-            <Compass className="size-5 text-luxury-gold" />
-            ทิศกิบลัต
-          </h1>
-          <p className="mt-1 flex items-center gap-1.5 text-xs text-bright-sky/75">
-            <MapPin className="size-3.5" />
-            {place}
-          </p>
-        </div>
+      <p className="mb-6 flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
+        <MapPin className="size-3.5 text-royal-blue" />
+        {place}
+      </p>
 
-        <div className="flex flex-col items-center gap-5 p-6">
-          {permissionHint && (
-            <button
-              type="button"
-              onClick={async () => {
-                const DOE = DeviceOrientationEvent as unknown as {
-                  requestPermission?: () => Promise<string>
-                }
-                if (DOE.requestPermission) {
-                  const p = await DOE.requestPermission()
-                  if (p === 'granted') setPermissionHint(false)
-                }
-              }}
-              className="w-full rounded-full bg-royal-blue px-4 py-2.5 text-sm font-semibold text-white"
-            >
-              อนุญาตการใช้เข็มทิศ
-            </button>
-          )}
+      {permissionHint && (
+        <button
+          type="button"
+          onClick={async () => {
+            const DOE = DeviceOrientationEvent as unknown as {
+              requestPermission?: () => Promise<string>
+            }
+            if (DOE.requestPermission) {
+              const p = await DOE.requestPermission()
+              if (p === 'granted') setPermissionHint(false)
+            }
+          }}
+          className="mb-4 w-full rounded-full bg-royal-blue py-3 text-sm font-semibold text-white shadow-lg"
+        >
+          อนุญาตการใช้เข็มทิศ
+        </button>
+      )}
 
-          {/* Compass dial */}
-          <div className="relative size-64">
-            <div
-              className="absolute inset-0 rounded-full border-4 border-royal-blue/20 bg-gradient-to-b from-bright-sky to-white shadow-inner"
-              style={{
-                transform: heading != null ? `rotate(${-heading}deg)` : undefined,
-                transition: 'transform 0.15s linear',
-              }}
-            >
-              {/* degree marks */}
-              {Array.from({ length: 12 }).map((_, i) => (
+      {/* Large compass card — Salaam style */}
+      <div className="soft-card mx-auto flex max-w-sm flex-col items-center px-6 py-10">
+        <div className="relative size-56 sm:size-64">
+          <div
+            className="absolute inset-0 rounded-full border-[6px] border-royal-blue/15 bg-gradient-to-b from-white to-soft-mint shadow-inner"
+            style={{
+              transform: heading != null ? `rotate(${-heading}deg)` : undefined,
+              transition: 'transform 0.12s linear',
+            }}
+          >
+            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => (
+              <div
+                key={deg}
+                className="absolute left-1/2 top-3 origin-[center_104px] -translate-x-1/2"
+                style={{ transform: `translateX(-50%) rotate(${deg}deg)` }}
+              >
                 <div
-                  key={i}
-                  className="absolute left-1/2 top-2 h-3 w-0.5 -translate-x-1/2 origin-[center_120px] bg-deep-blue/30"
-                  style={{ transform: `translateX(-50%) rotate(${i * 30}deg)` }}
+                  className={`mx-auto ${deg % 90 === 0 ? 'h-3 w-0.5 bg-deep-blue' : 'h-2 w-px bg-deep-blue/25'}`}
                 />
-              ))}
-              <span className="absolute left-1/2 top-4 -translate-x-1/2 text-xs font-bold text-deep-blue">
-                N
-              </span>
-              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-bold text-deep-blue/50">
-                S
-              </span>
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-deep-blue/50">
-                E
-              </span>
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-deep-blue/50">
-                W
-              </span>
-            </div>
+              </div>
+            ))}
+            <span className="absolute left-1/2 top-5 -translate-x-1/2 text-sm font-bold text-deep-blue">
+              N
+            </span>
+            <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-sm font-bold text-deep-blue/40">
+              S
+            </span>
+            <span className="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-bold text-deep-blue/40">
+              E
+            </span>
+            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-bold text-deep-blue/40">
+              W
+            </span>
+          </div>
 
-            {/* Qibla needle (points toward Kaaba relative to device) */}
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{
-                transform: `rotate(${needle}deg)`,
-                transition: 'transform 0.15s linear',
-              }}
-            >
-              <div className="flex flex-col items-center">
-                <div className="h-20 w-1 rounded-full bg-gradient-to-t from-luxury-gold to-red-500 shadow" />
-                <div className="-mt-1 flex size-8 items-center justify-center rounded-full bg-luxury-gold text-[10px] font-bold text-deep-blue shadow">
-                  ك
-                </div>
+          <div
+            className="absolute inset-0 flex items-start justify-center pt-8"
+            style={{
+              transform: `rotate(${needle}deg)`,
+              transition: 'transform 0.12s linear',
+            }}
+          >
+            <div className="flex flex-col items-center">
+              <div className="h-16 w-1.5 rounded-full bg-gradient-to-t from-royal-blue to-red-500 shadow-md" />
+              <div className="-mt-1 flex size-9 items-center justify-center rounded-full bg-luxury-gold text-xs font-bold text-deep-blue shadow-md ring-2 ring-white">
+                ك
               </div>
             </div>
           </div>
-
-          {aligned ? (
-            <p className="rounded-full bg-emerald-100 px-4 py-2 text-sm font-semibold text-emerald-700">
-              ✓ ตรงทิศกิบลัตแล้ว
-            </p>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              {qibla != null ? `ทิศกิบลัต ${qibla.toFixed(1)}° จากเหนือ` : 'กำลังคำนวณ...'}
-            </p>
-          )}
-
-          {error && <p className="text-center text-xs text-amber-600">{error}</p>}
-
-          <button
-            type="button"
-            onClick={locate}
-            className="flex items-center gap-2 rounded-full border border-royal-blue/30 px-4 py-2 text-sm font-medium text-royal-blue hover:bg-soft-mint"
-          >
-            <RefreshCw className="size-4" />
-            รีเฟรชตำแหน่ง
-          </button>
-
-          <p className="text-center text-[11px] leading-relaxed text-muted-foreground">
-            ถือเครื่องในแนวระนาบ หมุนตัวจนเข็มทองชี้ขึ้นด้านบน
-            <br />
-            บน iPhone อาจต้องอนุญาตเข็มทิศก่อนใช้งาน
-          </p>
         </div>
+
+        <div className="mt-8 w-full">
+          {aligned ? (
+            <div className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+              <span className="flex size-6 items-center justify-center rounded-full bg-emerald-500 text-white text-xs">
+                ✓
+              </span>
+              ตรงทิศกิบลัตแล้ว!
+            </div>
+          ) : (
+            <div className="rounded-2xl bg-soft-mint px-4 py-3 text-center text-sm text-deep-blue">
+              {qibla != null
+                ? `ทิศกิบลัต ${qibla.toFixed(1)}° จากทิศเหนือ`
+                : 'กำลังคำนวณ...'}
+            </div>
+          )}
+        </div>
+
+        {error && <p className="mt-3 text-center text-xs text-amber-600">{error}</p>}
+        <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground">
+          ถือเครื่องระนาบ หมุนตัวจนเข็มชี้ขึ้นด้านบน
+        </p>
       </div>
     </div>
   )
