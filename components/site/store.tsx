@@ -106,6 +106,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             staffContacts:
               (sett?.data as SiteSettings)?.staffContacts ?? seed.settings.staffContacts,
             gallery: (sett?.data as SiteSettings)?.gallery ?? seed.settings.gallery,
+            hotels: (sett?.data as SiteSettings)?.hotels ?? seed.settings.hotels,
             stats: {
               ...seed.settings.stats,
               ...((sett?.data as SiteSettings)?.stats || {}),
