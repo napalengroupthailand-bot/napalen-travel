@@ -15,27 +15,34 @@ export function MobileBottomNav() {
 
   if (view === 'admin') return null
 
+  const toolViews: View[] = ['qibla', 'tasbih', 'hijri-calendar', 'quran']
+  const highlightHome = view === 'home' || toolViews.includes(view)
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-luxury-gold/30 bg-deep-blue shadow-[0_-4px_20px_rgba(0,0,0,0.25)] lg:hidden">
-      <ul className="mx-auto flex max-w-lg items-stretch justify-around px-2 pt-2 pb-[max(12px,env(safe-area-inset-bottom))]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 px-3 pb-[max(10px,env(safe-area-inset-bottom))] pt-1 lg:hidden">
+      <ul className="mx-auto flex max-w-md items-stretch justify-around gap-0.5 rounded-[1.75rem] border border-white/80 bg-white/95 px-2 py-2 shadow-[0_8px_32px_rgba(10,20,40,0.14)] backdrop-blur-xl">
         {ITEMS.map((item) => {
           const isActive =
-            view === item.view ||
-            (view === 'article' && item.view === 'knowledge')
+            item.view === 'home'
+              ? highlightHome
+              : view === item.view ||
+                (view === 'article' && item.view === 'knowledge')
 
           return (
             <li key={item.view} className="flex-1">
               <button
                 type="button"
                 onClick={() => navigate(item.view)}
-                className={`flex w-full flex-col items-center gap-1 rounded-xl py-2.5 transition ${
+                className={`flex w-full flex-col items-center gap-0.5 rounded-2xl py-2.5 transition active:scale-95 ${
                   isActive
-                    ? 'bg-white/10 text-luxury-gold'
-                    : 'text-bright-sky/70 active:bg-white/5'
+                    ? 'bg-royal-blue text-white shadow-md shadow-royal-blue/25'
+                    : 'text-muted-foreground active:bg-soft-mint'
                 }`}
               >
-                <item.icon className={`size-6 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                <span className="text-xs font-semibold">{item.label}</span>
+                <item.icon className={`size-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                <span className={`text-[11px] leading-none ${isActive ? 'font-bold' : 'font-medium'}`}>
+                  {item.label}
+                </span>
               </button>
             </li>
           )
