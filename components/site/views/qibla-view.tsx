@@ -101,7 +101,7 @@ export function QiblaView() {
     ) < 8
 
   return (
-    <div className="app-page min-h-[70vh]">
+    <div className="app-page page-enter min-h-[70vh]">
       <div className="app-header-bar">
         <button
           type="button"
