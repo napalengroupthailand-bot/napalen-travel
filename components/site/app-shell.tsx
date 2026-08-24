@@ -15,6 +15,10 @@ import { ArticleView } from '@/components/site/views/article-view'
 import { ContactView } from '@/components/site/views/contact-view'
 import { AdminView } from '@/components/site/views/admin-view'
 import { PackageDetailView } from '@/components/site/views/package-detail-view'
+import { QiblaView } from '@/components/site/views/qibla-view'
+import { TasbihView } from '@/components/site/views/tasbih-view'
+import { HijriCalendarView } from '@/components/site/views/hijri-calendar-view'
+import { QuranView } from '@/components/site/views/quran-view'
 import { MobileBottomNav } from '@/components/site/mobile-bottom-nav'
 
 export function AppShell() {
@@ -59,6 +63,10 @@ export function AppShell() {
               {view === 'package' && <PackageDetailView packageId={packageId} />}
               {view === 'contact' && <ContactView />}
               {view === 'admin' && <AdminView />}
+              {view === 'qibla' && <QiblaView />}
+              {view === 'tasbih' && <TasbihView />}
+              {view === 'hijri-calendar' && <HijriCalendarView />}
+              {view === 'quran' && <QuranView />}
             </main>
             <Footer />
             <MobileBottomNav />
