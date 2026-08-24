@@ -11,6 +11,10 @@ export type View =
   | 'package'
   | 'contact'
   | 'admin'
+  | 'qibla'
+  | 'tasbih'
+  | 'hijri-calendar'
+  | 'quran'
 
 type NavValue = {
   view: View
