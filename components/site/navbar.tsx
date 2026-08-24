@@ -24,13 +24,13 @@ export function Navbar() {
           className="flex items-center gap-3 text-left"
           aria-label="ไปหน้าแรก"
         >
-         <img
-  src={COMPANY_LOGO || '/placeholder.svg'}
-  alt="โลโก้ นาปาเลน แทรเวิล แอนด์ ทัวร์"
-  width={48}
-  height={48}
-  className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
-/>
+          <img
+            src={COMPANY_LOGO || '/placeholder.svg'}
+            alt="โลโก้ นาปาเลน แทรเวิล แอนด์ ทัวร์"
+            width={48}
+            height={48}
+            className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
+          />
           <div className="leading-tight">
             <p className="text-sm font-semibold text-bright-sky sm:text-base">นาปาเลน แทรเวิล</p>
             <p className="text-[10px] font-light tracking-wide text-luxury-gold sm:text-xs">
@@ -39,13 +39,12 @@ export function Navbar() {
           </div>
         </button>
 
-        {/* Desktop menu */}
         <ul className="hidden items-center gap-1 lg:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.view}>
               <button
                 onClick={() => go(link.view)}
-                className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`rounded-full px-3 py-2 text-sm font-medium transition ${
                   view === link.view
                     ? 'bg-royal-blue text-bright-sky'
                     : 'text-bright-sky/80 hover:bg-white/5 hover:text-luxury-gold'
@@ -62,14 +61,14 @@ export function Navbar() {
             href={company.lineLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-lg bg-[#06C755] px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 sm:flex"
+            className="hidden items-center gap-1.5 rounded-full bg-[#06C755] px-3 py-2 text-sm font-semibold text-white transition hover:brightness-110 sm:flex"
           >
             <MessageCircle className="size-4" />
             แอดไลน์
           </a>
           <button
             onClick={() => go('admin')}
-            className="flex items-center gap-1.5 rounded-lg border border-luxury-gold/50 px-3 py-2 text-sm font-medium text-luxury-gold transition hover:bg-luxury-gold hover:text-deep-blue"
+            className="flex items-center gap-1.5 rounded-full border border-luxury-gold/50 px-3 py-2 text-sm font-medium text-luxury-gold transition hover:bg-luxury-gold hover:text-deep-blue"
           >
             <Lock className="size-4" />
             <span className="hidden sm:inline">Admin</span>
@@ -85,7 +84,6 @@ export function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile dropdown */}
       {open && (
         <div className="border-t border-white/10 bg-deep-blue lg:hidden">
           <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
