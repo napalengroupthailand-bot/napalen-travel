@@ -18,7 +18,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-luxury-gold/20 bg-deep-blue/95 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-3 py-2 sm:px-4 sm:py-3">
         <button
           onClick={() => go('home')}
           className="flex items-center gap-3 text-left"
@@ -29,7 +29,7 @@ export function Navbar() {
             alt="โลโก้ นาปาเลน แทรเวิล แอนด์ ทัวร์"
             width={48}
             height={48}
-            className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
+            className="size-9 rounded-full sm:size-11 border-2 border-luxury-gold bg-bright-sky object-cover"
           />
           <div className="leading-tight">
             <p className="text-sm font-semibold text-bright-sky sm:text-base">นาปาเลน แทรเวิล</p>
@@ -86,7 +86,7 @@ export function Navbar() {
 
       {open && (
         <div className="border-t border-white/10 bg-deep-blue lg:hidden">
-          <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
+          <ul className="mx-auto flex max-w-7xl flex-col gap-1 px-3 py-2 sm:px-4 sm:py-3">
             {NAV_LINKS.map((link) => (
               <li key={link.view}>
                 <button
