@@ -12,7 +12,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
 
   return (
     <article
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-luxury-gold/20 bg-card shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[1.25rem] border border-border/60 bg-card shadow-[0_4px_24px_rgba(10,61,50,0.08)] transition hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(10,61,50,0.14)]"
       onClick={() => navigate('package', pkg.id)}
     >
       <div className="relative h-52 overflow-hidden">
