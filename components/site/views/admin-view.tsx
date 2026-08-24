@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Phone,
   BarChart3,
+  Hotel as HotelIcon,
 } from 'lucide-react'
 import { useStore } from '../store'
 import { useToast } from '../toast'
@@ -30,6 +31,7 @@ import {
   type Testimonial,
   type StaffContact,
   type SiteStats,
+  type Hotel,
 } from '@/lib/site-data'
 
 type Tab =
@@ -42,6 +44,7 @@ type Tab =
   | 'testimonials'
   | 'staff'
   | 'stats'
+  | 'hotels'
 
 const STATUS_STYLES: Record<RegStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -160,6 +163,7 @@ const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: 'testimonials', label: 'ความประทับใจ', icon: MessageCircle },
   { id: 'staff', label: 'เบอร์ติดต่อ', icon: Phone },
   { id: 'company', label: 'ข้อมูลบริษัท', icon: Building2 },
+  { id: 'hotels', label: 'โรงแรม / นำทาง', icon: HotelIcon },
 ]
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -207,6 +211,7 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {tab === 'testimonials' && <TestimonialsTab />}
       {tab === 'staff' && <StaffTab />}
       {tab === 'company' && <CompanyTab />}
+      {tab === 'hotels' && <HotelsTab />}
     </div>
   )
 }
@@ -772,6 +777,125 @@ function CompanyTab() {
       >
         บันทึกข้อมูล
       </button>
+    </div>
+  )
+}
+
+function HotelsTab() {
+  const { settings, updateSettings } = useStore()
+  const { notify } = useToast()
+  const hotels = settings.hotels || []
+  const [form, setForm] = useState<Hotel | null>(null)
+  const inputCls =
+    'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground outline-none transition focus:border-royal-blue focus:ring-2 focus:ring-royal-blue/30'
+
+  const save = () => {
+    if (!form) return
+    if (!form.name.trim()) {
+      notify('กรุณาใส่ชื่อโรงแรม')
+      return
+    }
+    const exists = hotels.some((h) => h.id === form.id)
+    const next = exists
+      ? hotels.map((h) => (h.id === form.id ? form : h))
+      : [...hotels, form]
+    updateSettings({ hotels: next })
+    notify('บันทึกโรงแรมเรียบร้อย')
+    setForm(null)
+  }
+
+  const remove = (id: string) => {
+    updateSettings({ hotels: hotels.filter((h) => h.id !== id) })
+    notify('ลบเรียบร้อย')
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() =>
+            setForm({
+              id: `h-${Date.now()}`,
+              name: '',
+              address: '',
+              phone: '',
+              image: '',
+              city: '',
+              lat: undefined,
+              lng: undefined,
+            })
+          }
+          className="inline-flex items-center gap-2 rounded-lg bg-royal-blue px-4 py-2 text-sm font-semibold text-bright-sky"
+        >
+          <Plus className="size-4" />
+          เพิ่มโรงแรม
+        </button>
+      </div>
+      <div className="space-y-3">
+        {hotels.map((h) => (
+          <div key={h.id} className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+            <img src={h.image || '/placeholder.svg'} alt="" className="size-14 rounded-lg object-cover" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-deep-blue">{h.name}</p>
+              <p className="truncate text-xs text-muted-foreground">{h.address}</p>
+              <p className="text-xs text-royal-blue">{h.phone}</p>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => setForm({ ...h })} className="rounded-lg border border-royal-blue/40 px-3 py-1.5 text-royal-blue">
+                <Pencil className="size-3.5" />
+              </button>
+              <button onClick={() => remove(h.id)} className="rounded-lg border border-destructive/40 px-3 py-1.5 text-destructive">
+                <Trash2 className="size-3.5" />
+              </button>
+            </div>
+          </div>
+        ))}
+        {hotels.length === 0 && (
+          <p className="py-8 text-center text-sm text-muted-foreground">ยังไม่มีโรงแรม — กดเพิ่มโรงแรม</p>
+        )}
+      </div>
+
+      {form && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-deep-blue/60 p-4 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-luxury-gold/30 bg-card p-6 shadow-2xl">
+            <h3 className="mb-4 font-semibold text-deep-blue">ข้อมูลโรงแรม</h3>
+            <div className="space-y-3">
+              <input className={inputCls} placeholder="ชื่อโรงแรม *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <input className={inputCls} placeholder="เมือง เช่น มักกะฮ์" value={form.city || ''} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+              <input className={inputCls} placeholder="ที่อยู่" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+              <input className={inputCls} placeholder="เบอร์โทรโรงแรม" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  className={inputCls}
+                  placeholder="ละติจูด (lat)"
+                  type="number"
+                  step="any"
+                  value={form.lat ?? ''}
+                  onChange={(e) => setForm({ ...form, lat: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+                <input
+                  className={inputCls}
+                  placeholder="ลองจิจูด (lng)"
+                  type="number"
+                  step="any"
+                  value={form.lng ?? ''}
+                  onChange={(e) => setForm({ ...form, lng: e.target.value === '' ? undefined : Number(e.target.value) })}
+                />
+              </div>
+              <p className="text-[11px] text-muted-foreground">พิกัดช่วยให้นำทางแม่นยำ — คัดลอกจาก Google Maps ได้</p>
+              <ImageUpload value={form.image} onChange={(image) => setForm({ ...form, image })} label="รูปโรงแรม" />
+            </div>
+            <div className="mt-4 flex justify-end gap-2">
+              <button onClick={() => setForm(null)} className="rounded-lg border border-border px-4 py-2 text-sm">
+                ยกเลิก
+              </button>
+              <button onClick={save} className="rounded-lg bg-royal-blue px-5 py-2 text-sm font-semibold text-bright-sky">
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
