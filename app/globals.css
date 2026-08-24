@@ -23,13 +23,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Brand palette */
   --color-bright-sky: #f1f5f9;
   --color-deep-blue: #0a1428;
   --color-royal-blue: #1e40af;
   --color-light-cyan: #06b6d4;
   --color-luxury-gold: #d4af37;
   --color-dark-gold: #b45309;
+  --color-soft-mint: #e8eef8;
 
   --font-sans: var(--font-prompt), 'Segoe UI', sans-serif;
   --font-arabic: var(--font-amiri), serif;
@@ -60,7 +60,7 @@
   --border: #cbd5e1;
   --input: #cbd5e1;
   --ring: #1e40af;
-  --radius: 0.75rem;
+  --radius: 1rem;
 }
 
 @layer base {
@@ -72,15 +72,10 @@
   }
 }
 
-/* Subtle film-grain noise overlay */
-.noise-overlay::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+.noise-overlay {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(30, 64, 175, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 175, 55, 0.06), transparent);
 }
 
 @keyframes pulse-slow {
@@ -114,7 +109,10 @@
   font-family: var(--font-arabic);
 }
 
-/* thin custom scrollbar */
-::-webkit-scrollbar { width: 10px; height: 10px; }
+.soft-card {
+  @apply rounded-2xl border border-border/60 bg-card shadow-[0_4px_24px_rgba(10,20,40,0.06)];
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--color-bright-sky); }
 ::-webkit-scrollbar-thumb { background: var(--color-royal-blue); border-radius: 8px; }
