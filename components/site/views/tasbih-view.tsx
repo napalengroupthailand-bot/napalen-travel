@@ -50,7 +50,7 @@ export function TasbihView() {
   }
 
   return (
-    <div className="app-page">
+    <div className="app-page page-enter">
       <div className="app-header-bar">
         <button
           type="button"
@@ -116,7 +116,7 @@ export function TasbihView() {
           <button
             type="button"
             onClick={tap}
-            className="relative flex size-44 items-center justify-center rounded-full bg-white shadow-[0_8px_40px_rgba(26,77,181,0.2)] ring-4 ring-royal-blue/10 transition active:scale-95 sm:size-52"
+            className="relative flex size-44 items-center justify-center rounded-full bg-white shadow-[0_8px_40px_rgba(26,77,181,0.2)] ring-4 ring-royal-blue/10 transition-transform duration-150 active:scale-90 sm:size-52 animate-ring-pulse"
             aria-label="นับ"
           >
             <div className="text-center">
