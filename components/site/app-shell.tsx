@@ -19,6 +19,7 @@ import { QiblaView } from '@/components/site/views/qibla-view'
 import { TasbihView } from '@/components/site/views/tasbih-view'
 import { HijriCalendarView } from '@/components/site/views/hijri-calendar-view'
 import { QuranView } from '@/components/site/views/quran-view'
+import { HotelsView } from '@/components/site/views/hotels-view'
 import { MobileBottomNav } from '@/components/site/mobile-bottom-nav'
 
 export function AppShell() {
@@ -51,7 +52,7 @@ export function AppShell() {
             <TopBar />
             <Navbar />
             <CalendarRibbon />
-            <main className="flex-1 pb-24 lg:pb-0">
+            <main className="flex-1 pb-20 lg:pb-0">
               <div style={{ display: view === 'home' ? 'block' : 'none' }}>
                 <HomeView />
               </div>
@@ -67,6 +68,7 @@ export function AppShell() {
               {view === 'tasbih' && <TasbihView />}
               {view === 'hijri-calendar' && <HijriCalendarView />}
               {view === 'quran' && <QuranView />}
+              {view === 'hotels' && <HotelsView />}
             </main>
             <Footer />
             <MobileBottomNav />
