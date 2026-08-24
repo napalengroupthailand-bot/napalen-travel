@@ -49,7 +49,7 @@ export function HijriCalendarView() {
     d === now.getDate() && month === now.getMonth() && year === now.getFullYear()
 
   return (
-    <div className="app-page">
+    <div className="app-page page-enter">
       <div className="app-header-bar">
         <button
           type="button"
