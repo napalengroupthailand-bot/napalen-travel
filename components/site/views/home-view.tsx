@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ArrowRight, MessageCircle, MapPin, Quote, Users, Award, Heart, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowRight, MessageCircle, MapPin, Quote, Users, Award, Heart, Volume2, VolumeX, ChevronLeft, ChevronRight, Compass, CircleDot, CalendarDays, BookOpen } from 'lucide-react'
 import { useStore } from '../store'
 import { useNav } from '../nav'
 import { SectionHeading } from '../package-card'
@@ -135,14 +135,14 @@ export function HomeView() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               onClick={() => navigate('hajj')}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-luxury-gold px-7 py-3 font-semibold text-deep-blue transition hover:brightness-110 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-luxury-gold px-8 py-3.5 font-semibold text-deep-blue shadow-lg shadow-luxury-gold/20 transition hover:brightness-110 sm:w-auto"
             >
               สมัครฮัจญ์
               <ArrowRight className="size-4" />
             </button>
             <button
               onClick={() => navigate('umrah')}
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-bright-sky/40 bg-white/5 px-7 py-3 font-semibold text-bright-sky backdrop-blur transition hover:bg-white/10 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-bright-sky/40 bg-white/10 px-8 py-3.5 font-semibold text-bright-sky backdrop-blur transition hover:bg-white/20 sm:w-auto"
             >
               สมัครอุมเราะห์
               <ArrowRight className="size-4" />
@@ -152,13 +152,45 @@ export function HomeView() {
       </section>
 
       <section className="relative z-10 -mt-14 px-4">
-        <div className="mx-auto grid max-w-4xl gap-4 rounded-2xl border border-luxury-gold/30 bg-card p-6 shadow-2xl sm:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl gap-3 rounded-[1.5rem] border border-border/60 bg-white/95 p-5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:p-6">
           {stats.map((s) => (
-            <div key={s.label} className="flex flex-col items-center gap-1 py-2 text-center">
-              <s.icon className="size-8 text-luxury-gold" />
-              <p className="text-3xl font-bold text-deep-blue">{s.value}</p>
-              <p className="text-sm text-muted-foreground">{s.label}</p>
+            <div
+              key={s.label}
+              className="flex flex-col items-center gap-1.5 rounded-2xl bg-soft-mint/60 py-3 text-center"
+            >
+              <div className="flex size-11 items-center justify-center rounded-full bg-royal-blue/10">
+                <s.icon className="size-5 text-royal-blue" />
+              </div>
+              <p className="text-2xl font-bold text-deep-blue sm:text-3xl">{s.value}</p>
+              <p className="text-xs font-medium text-muted-foreground sm:text-sm">{s.label}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* เครื่องมืออิสลาม — สไตล์เมนูไอคอนแบบแอป */}
+      <section className="mx-auto max-w-4xl px-4 pt-10">
+        <h2 className="mb-4 text-center text-sm font-semibold tracking-wide text-royal-blue">
+          เครื่องมือสำหรับผู้แสวงบุญ
+        </h2>
+        <div className="grid grid-cols-4 gap-3 sm:gap-4">
+          {[
+            { view: 'qibla' as const, label: 'ทิศกิบลัต', icon: Compass, color: 'bg-royal-blue' },
+            { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot, color: 'bg-deep-blue' },
+            { view: 'hijri-calendar' as const, label: 'ปฏิทิน', icon: CalendarDays, color: 'bg-royal-blue' },
+            { view: 'quran' as const, label: 'อัลกุรอาน', icon: BookOpen, color: 'bg-deep-blue' },
+          ].map((t) => (
+            <button
+              key={t.view}
+              type="button"
+              onClick={() => navigate(t.view)}
+              className="flex flex-col items-center gap-2 rounded-2xl border border-border/50 bg-white p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md active:scale-95"
+            >
+              <span className={`flex size-12 items-center justify-center rounded-2xl ${t.color} text-white shadow-md`}>
+                <t.icon className="size-6" />
+              </span>
+              <span className="text-[11px] font-semibold text-deep-blue sm:text-xs">{t.label}</span>
+            </button>
           ))}
         </div>
       </section>
