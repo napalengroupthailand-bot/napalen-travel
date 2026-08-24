@@ -1,11 +1,12 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ArrowRight, MessageCircle, MapPin, Quote, Users, Award, Heart, Volume2, VolumeX, ChevronLeft, ChevronRight, Compass, CircleDot, CalendarDays, BookOpen } from 'lucide-react'
+import { ArrowRight, MessageCircle, MapPin, Quote, Users, Award, Heart, Volume2, VolumeX, ChevronLeft, ChevronRight, Compass, CircleDot, CalendarDays, BookOpen, Hotel } from 'lucide-react'
 import { useStore } from '../store'
 import { useNav } from '../nav'
 import { SectionHeading } from '../package-card'
 import { youtubeEmbedUrl, extractYoutubeId } from '@/lib/site-data'
+import { tapFeedback } from '@/lib/sfx'
 
 export function HomeView() {
   const { company, settings } = useStore()
@@ -152,42 +153,44 @@ export function HomeView() {
       </section>
 
       <section className="relative z-10 -mt-14 px-4">
-        <div className="mx-auto grid max-w-4xl gap-3 rounded-[1.5rem] border border-border/60 bg-white/95 p-5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:p-6 animate-slide-up">
+        <div className="mx-auto grid max-w-4xl gap-1.5 rounded-2xl border border-border/60 bg-white/95 p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:rounded-[1.5rem] sm:p-6 animate-slide-up">
           {stats.map((s) => (
             <div
               key={s.label}
-              className="flex flex-col items-center gap-1.5 rounded-2xl bg-soft-mint/60 py-3 text-center"
+              className="flex flex-col items-center gap-0.5 rounded-xl bg-soft-mint/60 py-2 text-center sm:gap-1.5 sm:rounded-2xl sm:py-3"
             >
-              <div className="flex size-11 items-center justify-center rounded-full bg-royal-blue/10">
-                <s.icon className="size-5 text-royal-blue" />
+              <div className="flex size-8 items-center justify-center rounded-full bg-royal-blue/10 sm:size-11">
+                <s.icon className="size-4 text-royal-blue sm:size-5" />
               </div>
-              <p className="text-2xl font-bold text-deep-blue sm:text-3xl">{s.value}</p>
-              <p className="text-xs font-medium text-muted-foreground sm:text-sm">{s.label}</p>
+              <p className="text-base font-bold text-deep-blue sm:text-3xl">{s.value}</p>
+              <p className="text-[10px] font-medium text-muted-foreground sm:text-sm">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* เครื่องมืออิสลาม — สไตล์เมนูไอคอนแบบ Salaam */}
-      <section className="mx-auto max-w-lg px-4 pt-8">
-        <div className="soft-card px-4 py-5 animate-scale-in">
-          <div className="grid grid-cols-4 gap-y-4 stagger">
+      {
+      {/* เครื่องมือ — ไอคอนเล็กลง + โรงแรม */}
+      <section className="mx-auto max-w-lg px-3 pt-6 sm:px-4">
+        <div className="soft-card light-sweep relative px-1.5 py-2.5 sm:px-4 sm:py-4 animate-scale-in">
+          <div className="grid grid-cols-5 gap-0.5 sm:gap-2 stagger">
             {[
-              { view: 'qibla' as const, label: 'ทิศกิบลัต', icon: Compass, bg: 'bg-royal-blue/10 text-royal-blue' },
+              { view: 'qibla' as const, label: 'กิบลัต', icon: Compass, bg: 'bg-royal-blue/10 text-royal-blue' },
               { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot, bg: 'bg-sky-100 text-sky-700' },
-              { view: 'quran' as const, label: 'อัลกุรอาน', icon: BookOpen, bg: 'bg-indigo-100 text-indigo-700' },
+              { view: 'hotels' as const, label: 'โรงแรม', icon: Hotel, bg: 'bg-emerald-100 text-emerald-700' },
+              { view: 'quran' as const, label: 'กุรอาน', icon: BookOpen, bg: 'bg-indigo-100 text-indigo-700' },
               { view: 'hijri-calendar' as const, label: 'ปฏิทิน', icon: CalendarDays, bg: 'bg-amber-100 text-amber-700' },
-            ].map((t) => (
+            ].map((tool) => (
               <button
-                key={t.view}
+                key={tool.view}
                 type="button"
-                onClick={() => navigate(t.view)}
-                className="flex flex-col items-center gap-2 pressable"
+                onClick={(e) => { tapFeedback(e); navigate(tool.view) }}
+                className="flex flex-col items-center gap-0.5 py-0.5"
               >
-                <span className={`flex size-14 items-center justify-center rounded-2xl ${t.bg} transition-transform duration-200 hover:scale-110`}>
-                  <t.icon className="size-7" strokeWidth={1.75} />
+                <span className={`icon-tile flex size-9 items-center justify-center rounded-xl sm:size-11 sm:rounded-2xl ${tool.bg}`}>
+                  <tool.icon className="size-4 sm:size-5" strokeWidth={1.75} />
                 </span>
-                <span className="text-[11px] font-semibold text-deep-blue">{t.label}</span>
+                <span className="text-[9px] font-semibold text-deep-blue sm:text-[11px]">{tool.label}</span>
               </button>
             ))}
           </div>
