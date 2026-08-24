@@ -70,15 +70,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* smooth interactive defaults */
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
 }
 
-/* Soft ambient like Salaam app */
 .noise-overlay {
   background:
     radial-gradient(ellipse 90% 50% at 50% -10%, rgba(26, 77, 181, 0.12), transparent 55%),
     radial-gradient(ellipse 50% 40% at 100% 100%, rgba(56, 189, 248, 0.08), transparent 50%),
     linear-gradient(180deg, #eef3f9 0%, #f7f9fc 100%);
 }
+
+/* ========== Animations ========== */
 
 @keyframes pulse-slow {
   0%, 100% { opacity: 1; }
@@ -96,11 +101,112 @@
 }
 
 @keyframes float-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-float-up {
-  animation: float-up 0.6s ease-out both;
+  animation: float-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+  animation: slide-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+.animate-pop {
+  animation: pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes soft-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+.animate-soft-bounce {
+  animation: soft-bounce 2.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(26, 77, 181, 0.35); }
+  70% { box-shadow: 0 0 0 14px rgba(26, 77, 181, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(26, 77, 181, 0); }
+}
+.animate-ring-pulse {
+  animation: ring-pulse 2s ease-out infinite;
+}
+
+/* staggered children */
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.stagger > *:nth-child(6) { animation-delay: 0.24s; }
+.stagger > *:nth-child(7) { animation-delay: 0.28s; }
+.stagger > *:nth-child(8) { animation-delay: 0.32s; }
+
+.stagger > * {
+  animation: float-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* press / hover helpers */
+.pressable {
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease;
+}
+.pressable:active {
+  transform: scale(0.96);
+}
+
+.lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+}
+.lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(10, 22, 40, 0.12);
+}
+.lift:active {
+  transform: translateY(-1px) scale(0.98);
 }
 
 .gold-text {
@@ -117,12 +223,27 @@
 
 .app-page {
   @apply mx-auto max-w-lg px-4 py-5;
+  animation: fade-in 0.35s ease-out both;
 }
 
 .app-header-bar {
   @apply mb-4 flex items-center gap-3;
 }
 
+/* page content enter */
+.page-enter {
+  animation: slide-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--color-bright-sky); }
 ::-webkit-scrollbar-thumb { background: var(--color-royal-blue); border-radius: 8px; }
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
