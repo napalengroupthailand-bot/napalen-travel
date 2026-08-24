@@ -169,7 +169,6 @@ export function HomeView() {
         </div>
       </section>
 
-      {
       {/* เครื่องมือ — ไอคอนเล็กลง + โรงแรม */}
       <section className="mx-auto max-w-lg px-3 pt-6 sm:px-4">
         <div className="soft-card light-sweep relative px-1.5 py-2.5 sm:px-4 sm:py-4 animate-scale-in">
