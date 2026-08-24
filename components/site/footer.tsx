@@ -10,25 +10,24 @@ export function Footer() {
   const { navigate } = useNav()
 
   return (
-    <footer className="relative z-10 border-t border-luxury-gold/20 bg-deep-blue text-bright-sky/80">
+    <footer className="relative z-10 mt-8 border-t border-border/40 bg-deep-blue text-bright-sky/85">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 md:grid-cols-3">
         <div>
           <div className="mb-4 flex items-center gap-3">
-                        <img
+            <img
               src={COMPANY_LOGO || '/placeholder.svg'}
               alt="โลโก้บริษัท"
               width={44}
               height={44}
-              className="size-11 rounded-full border-2 border-luxury-gold bg-bright-sky object-cover"
+              className="size-11 rounded-full border-2 border-luxury-gold/50 bg-bright-sky object-cover"
             />
             <div>
               <p className="font-semibold text-bright-sky">{company.name}</p>
               <p className="text-xs text-luxury-gold">{company.nameEn}</p>
             </div>
           </div>
-          <p className="text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed text-bright-sky/70">
             บริการฮัจญ์และอุมเราะห์ครบวงจร ด้วยความศรัทธา ความจริงใจ และมาตรฐานพรีเมียม
-            เพื่อการเดินทางสู่บ้านของพระเจ้าที่สมบูรณ์แบบ
           </p>
         </div>
 
@@ -69,7 +68,7 @@ export function Footer() {
                 href={company.lineLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-1 inline-flex items-center gap-1.5 rounded-lg bg-[#06C755] px-3 py-2 text-sm font-semibold text-white"
+                className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-[#06C755] px-4 py-2 text-sm font-semibold text-white"
               >
                 <MessageCircle className="size-4" />
                 แอดไลน์ Official
@@ -78,7 +77,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-bright-sky/60">
+      <div className="border-t border-white/10 py-4 text-center text-xs text-bright-sky/50">
         © {new Date().getFullYear()} {company.name} — สงวนลิขสิทธิ์
       </div>
     </footer>
