@@ -4,8 +4,18 @@ import { useState, useEffect, useMemo } from 'react'
 import { ArrowLeft, MapPin, Phone, Navigation, ExternalLink } from 'lucide-react'
 import { useNav } from '../nav'
 import { useStore } from '../store'
-import { type Hotel } from '@/lib/site-data'
 import { playSuccess, tapFeedback } from '@/lib/sfx'
+
+type HotelItem = {
+  id: string
+  name: string
+  address: string
+  phone: string
+  image: string
+  lat?: number
+  lng?: number
+  city?: string
+}
 
 function toRad(d: number) {
   return (d * Math.PI) / 180
@@ -15,15 +25,17 @@ function toDeg(r: number) {
 }
 
 function bearingTo(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const φ1 = toRad(lat1)
-  const φ2 = toRad(lat2)
-  const Δλ = toRad(lng2 - lng1)
-  const y = Math.sin(Δλ) * Math.cos(φ2)
-  const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ)
+  const phi1 = toRad(lat1)
+  const phi2 = toRad(lat2)
+  const dLambda = toRad(lng2 - lng1)
+  const y = Math.sin(dLambda) * Math.cos(phi2)
+  const x =
+    Math.cos(phi1) * Math.sin(phi2) -
+    Math.sin(phi1) * Math.cos(phi2) * Math.cos(dLambda)
   return (toDeg(Math.atan2(y, x)) + 360) % 360
 }
 
-function openMaps(h: Hotel) {
+function openMaps(h: HotelItem) {
   playSuccess()
   const dest =
     h.lat != null && h.lng != null
@@ -36,8 +48,8 @@ function openMaps(h: Hotel) {
 export function HotelsView() {
   const { navigate } = useNav()
   const { settings } = useStore()
-  const hotels = settings.hotels || []
-  const [selected, setSelected] = useState<Hotel | null>(null)
+  const hotels = (settings.hotels || []) as HotelItem[]
+  const [selected, setSelected] = useState<HotelItem | null>(null)
   const [mapMode, setMapMode] = useState<'map' | 'street'>('map')
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null)
   const [heading, setHeading] = useState<number | null>(null)
@@ -55,11 +67,16 @@ export function HotelsView() {
     if (!selected) return
     const onOrient = (e: DeviceOrientationEvent) => {
       const anyE = e as DeviceOrientationEvent & { webkitCompassHeading?: number }
-      if (typeof anyE.webkitCompassHeading === 'number') setHeading(anyE.webkitCompassHeading)
-      else if (e.alpha != null) setHeading((360 - e.alpha) % 360)
+      if (typeof anyE.webkitCompassHeading === 'number') {
+        setHeading(anyE.webkitCompassHeading)
+      } else if (e.alpha != null) {
+        setHeading((360 - e.alpha) % 360)
+      }
     }
     const start = async () => {
-      const DOE = DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }
+      const DOE = DeviceOrientationEvent as unknown as {
+        requestPermission?: () => Promise<string>
+      }
       if (typeof DOE.requestPermission === 'function') {
         try {
           await DOE.requestPermission()
@@ -145,7 +162,9 @@ export function HotelsView() {
                   >
                     <div className="h-10 w-1 rounded-full bg-gradient-to-t from-royal-blue to-red-500" />
                   </div>
-                  <span className="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-bold">N</span>
+                  <span className="absolute left-1/2 top-1 -translate-x-1/2 text-[10px] font-bold">
+                    N
+                  </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {targetBearing != null
@@ -156,7 +175,7 @@ export function HotelsView() {
             ) : null}
 
             <div className="overflow-hidden rounded-2xl border border-border">
-              <div className="mb-0 flex gap-2 p-2">
+              <div className="flex gap-2 p-2">
                 <button
                   type="button"
                   onClick={() => setMapMode('map')}
@@ -170,7 +189,9 @@ export function HotelsView() {
                   type="button"
                   onClick={() => setMapMode('street')}
                   className={`flex-1 rounded-full py-2 text-xs font-semibold transition ${
-                    mapMode === 'street' ? 'bg-royal-blue text-white' : 'bg-soft-mint text-deep-blue'
+                    mapMode === 'street'
+                      ? 'bg-royal-blue text-white'
+                      : 'bg-soft-mint text-deep-blue'
                   }`}
                 >
                   มุมถนน (Street)
