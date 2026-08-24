@@ -3,6 +3,7 @@
 import { Check, Clock, Hotel, MapPin, Star } from 'lucide-react'
 import type { Package } from '@/lib/site-data'
 import { useNav } from './nav'
+import { tapFeedback } from '@/lib/sfx'
 
 export function PackageCard({ pkg }: { pkg: Package }) {
   const { navigate } = useNav()
@@ -12,7 +13,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
   return (
     <article
       className="group soft-card lift flex cursor-pointer flex-col overflow-hidden"
-      onClick={() => navigate('package', pkg.id)}
+      onClick={(e) => { tapFeedback(e); navigate('package', pkg.id) }}
     >
       <div className="relative h-48 overflow-hidden">
         <img
