@@ -135,14 +135,14 @@ export function HomeView() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               onClick={() => navigate('hajj')}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-luxury-gold px-8 py-3.5 font-semibold text-deep-blue shadow-lg shadow-luxury-gold/20 transition hover:brightness-110 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-luxury-gold px-8 py-3.5 font-semibold text-deep-blue shadow-lg shadow-luxury-gold/20 transition-all duration-200 hover:brightness-110 hover:scale-[1.03] active:scale-95 sm:w-auto animate-float-up"
             >
               สมัครฮัจญ์
               <ArrowRight className="size-4" />
             </button>
             <button
               onClick={() => navigate('umrah')}
-              className="flex w-full items-center justify-center gap-2 rounded-full border border-bright-sky/40 bg-white/10 px-8 py-3.5 font-semibold text-bright-sky backdrop-blur transition hover:bg-white/20 sm:w-auto"
+              className="flex w-full items-center justify-center gap-2 rounded-full border border-bright-sky/40 bg-white/10 px-8 py-3.5 font-semibold text-bright-sky backdrop-blur transition-all duration-200 hover:bg-white/20 hover:scale-[1.03] active:scale-95 sm:w-auto animate-float-up"
             >
               สมัครอุมเราะห์
               <ArrowRight className="size-4" />
@@ -152,7 +152,7 @@ export function HomeView() {
       </section>
 
       <section className="relative z-10 -mt-14 px-4">
-        <div className="mx-auto grid max-w-4xl gap-3 rounded-[1.5rem] border border-border/60 bg-white/95 p-5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:p-6">
+        <div className="mx-auto grid max-w-4xl gap-3 rounded-[1.5rem] border border-border/60 bg-white/95 p-5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:p-6 animate-slide-up">
           {stats.map((s) => (
             <div
               key={s.label}
@@ -170,8 +170,8 @@ export function HomeView() {
 
       {/* เครื่องมืออิสลาม — สไตล์เมนูไอคอนแบบ Salaam */}
       <section className="mx-auto max-w-lg px-4 pt-8">
-        <div className="soft-card px-4 py-5">
-          <div className="grid grid-cols-4 gap-y-4">
+        <div className="soft-card px-4 py-5 animate-scale-in">
+          <div className="grid grid-cols-4 gap-y-4 stagger">
             {[
               { view: 'qibla' as const, label: 'ทิศกิบลัต', icon: Compass, bg: 'bg-royal-blue/10 text-royal-blue' },
               { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot, bg: 'bg-sky-100 text-sky-700' },
@@ -182,9 +182,9 @@ export function HomeView() {
                 key={t.view}
                 type="button"
                 onClick={() => navigate(t.view)}
-                className="flex flex-col items-center gap-2 transition active:scale-95"
+                className="flex flex-col items-center gap-2 pressable"
               >
-                <span className={`flex size-14 items-center justify-center rounded-2xl ${t.bg}`}>
+                <span className={`flex size-14 items-center justify-center rounded-2xl ${t.bg} transition-transform duration-200 hover:scale-110`}>
                   <t.icon className="size-7" strokeWidth={1.75} />
                 </span>
                 <span className="text-[11px] font-semibold text-deep-blue">{t.label}</span>
@@ -217,7 +217,7 @@ export function HomeView() {
           ].map((s) => (
             <article
               key={s.title}
-              className="group relative overflow-hidden rounded-2xl border border-luxury-gold/20 shadow-lg"
+              className="group relative overflow-hidden rounded-[1.5rem] shadow-[0_8px_32px_rgba(10,22,40,0.12)] lift"
             >
               <img
                 src={s.img || '/placeholder.svg'}
@@ -230,7 +230,7 @@ export function HomeView() {
                 <p className="mt-2 text-sm leading-relaxed text-bright-sky/85">{s.desc}</p>
                 <button
                   onClick={() => navigate(s.go)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-luxury-gold px-5 py-2.5 text-sm font-semibold text-deep-blue transition hover:brightness-110"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-luxury-gold px-5 py-2.5 text-sm font-semibold text-deep-blue transition hover:brightness-110 active:scale-95"
                 >
                   ดูรายละเอียด
                   <ArrowRight className="size-4" />
@@ -310,7 +310,7 @@ export function HomeView() {
             href={company.lineLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex shrink-0 items-center gap-2 rounded-lg bg-[#06C755] px-7 py-3.5 font-semibold text-white transition hover:brightness-110"
+            className="flex shrink-0 items-center gap-2 rounded-full bg-[#06C755] px-7 py-3.5 font-semibold text-white shadow-lg transition hover:brightness-110 active:scale-95"
           >
             <MessageCircle className="size-5" />
             แอดไลน์ Official
@@ -325,7 +325,7 @@ export function HomeView() {
             {settings.testimonials.map((t) => (
               <figure
                 key={t.id}
-                className="flex flex-col rounded-2xl border border-luxury-gold/20 bg-card p-6 shadow-lg"
+                className="soft-card lift flex flex-col p-6"
               >
                 <Quote className="size-8 text-luxury-gold/40" />
                 <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80">
@@ -351,7 +351,7 @@ export function HomeView() {
       <section className="mx-auto max-w-7xl px-4 py-20">
         <SectionHeading eyebrow="เยี่ยมชมเรา" title="สำนักงานของเรา" />
         <div className="grid items-stretch gap-6 lg:grid-cols-2">
-          <div className="flex flex-col justify-center rounded-2xl border border-luxury-gold/20 bg-card p-8 shadow-lg">
+          <div className="soft-card flex flex-col justify-center p-8">
             <h3 className="text-xl font-semibold text-deep-blue">{company.name}</h3>
             <p className="mt-1 text-sm text-luxury-gold">{company.nameEn}</p>
             <p className="mt-5 flex items-start gap-2 text-sm text-foreground/80">
@@ -373,7 +373,7 @@ export function HomeView() {
             )}
             <button
               onClick={() => navigate('contact')}
-              className="mt-6 inline-flex w-fit items-center gap-2 rounded-lg bg-royal-blue px-6 py-3 text-sm font-semibold text-bright-sky transition hover:bg-deep-blue"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-royal-blue px-6 py-3 text-sm font-semibold text-bright-sky shadow-md transition hover:brightness-110 active:scale-95"
             >
               ติดต่อเรา
               <ArrowRight className="size-4" />
