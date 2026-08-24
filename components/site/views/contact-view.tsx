@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Phone, Send, UserRound } from 'lucide-react'
+import { Phone, Send, UserRound, MapPin, Mail } from 'lucide-react'
 import { useStore } from '../store'
 import { useToast } from '../toast'
 import { SectionHeading } from '../package-card'
@@ -12,7 +12,7 @@ export function ContactView() {
   const [form, setForm] = useState({ name: '', phone: '', message: '' })
 
   const inputCls =
-    'w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-royal-blue focus:ring-2 focus:ring-royal-blue/30'
+    'w-full rounded-2xl border border-border bg-soft-mint/40 px-4 py-3 text-sm text-foreground outline-none transition focus:border-royal-blue focus:bg-white focus:ring-2 focus:ring-royal-blue/20'
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,27 +25,24 @@ export function ContactView() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16">
+    <div className="page-enter mx-auto max-w-7xl px-4 py-12">
       <SectionHeading
         eyebrow="ติดต่อเรา"
         title="เราพร้อมดูแลท่าน"
         subtitle="ติดต่อทีมงานของเราได้ทุกช่องทาง เราพร้อมให้คำปรึกษาด้วยความจริงใจ"
       />
 
-      <div className="mb-12 grid gap-5 sm:grid-cols-3">
+      <div className="mb-10 grid gap-4 sm:grid-cols-3 stagger">
         {settings.staffContacts.map((s) => (
-          <div
-            key={s.id}
-            className="flex flex-col items-center rounded-2xl border border-luxury-gold/20 bg-card p-6 text-center shadow-lg"
-          >
+          <div key={s.id} className="soft-card lift flex flex-col items-center p-6 text-center">
             <div className="flex size-16 items-center justify-center rounded-full bg-royal-blue/10 text-royal-blue">
               <UserRound className="size-8" />
             </div>
-            <h3 className="mt-4 font-semibold text-deep-blue">{s.name}</h3>
+            <h3 className="mt-4 font-bold text-deep-blue">{s.name}</h3>
             <p className="text-sm text-muted-foreground">{s.role}</p>
             <a
               href={`tel:${s.phone}`}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-royal-blue px-5 py-2.5 text-sm font-semibold text-bright-sky transition hover:bg-deep-blue"
+              className="mt-4 inline-flex items-center gap-2 rounded-full bg-royal-blue px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-royal-blue/20 transition hover:brightness-110 active:scale-95"
             >
               <Phone className="size-4" />
               {s.phone}
@@ -55,56 +52,64 @@ export function ContactView() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="min-h-[360px] overflow-hidden rounded-2xl border border-luxury-gold/20 shadow-lg">
-          <iframe
-            src={company.mapEmbed}
-            title="แผนที่สำนักงาน"
-            className="size-full min-h-[360px]"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
+        <div className="soft-card space-y-4 p-6">
+          <h3 className="font-bold text-deep-blue">ข้อมูลติดต่อ</h3>
+          <p className="flex items-start gap-3 text-sm text-muted-foreground">
+            <MapPin className="mt-0.5 size-4 shrink-0 text-royal-blue" />
+            {company.address}
+          </p>
+          <p className="flex items-center gap-3 text-sm">
+            <Phone className="size-4 shrink-0 text-royal-blue" />
+            <a href={`tel:${company.phone}`} className="font-medium text-deep-blue hover:text-royal-blue">
+              {company.phone}
+            </a>
+          </p>
+          <p className="flex items-center gap-3 text-sm">
+            <Mail className="size-4 shrink-0 text-royal-blue" />
+            <a href={`mailto:${company.email}`} className="font-medium text-deep-blue hover:text-royal-blue">
+              {company.email}
+            </a>
+          </p>
+          {company.mapEmbed && (
+            <div className="mt-4 overflow-hidden rounded-2xl border border-border">
+              <iframe
+                src={company.mapEmbed}
+                title="แผนที่"
+                className="h-56 w-full"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          )}
         </div>
-        <form
-          onSubmit={submit}
-          className="rounded-2xl border border-luxury-gold/30 bg-card p-6 shadow-xl sm:p-8"
-        >
-          <h3 className="mb-6 text-xl font-semibold text-deep-blue">ส่งข้อความถึงเรา</h3>
-          <div className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-deep-blue">ชื่อ-นามสกุล</label>
-              <input
-                className={inputCls}
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-deep-blue">เบอร์โทรศัพท์</label>
-              <input
-                className={inputCls}
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-deep-blue">ข้อความ</label>
-              <textarea
-                className={`${inputCls} min-h-[120px] resize-y`}
-                value={form.message}
-                onChange={(e) => setForm({ ...form, message: e.target.value })}
-              />
-            </div>
-          </div>
+
+        <form onSubmit={submit} className="soft-card space-y-4 p-6">
+          <h3 className="font-bold text-deep-blue">ส่งข้อความถึงเรา</h3>
+          <input
+            className={inputCls}
+            placeholder="ชื่อของคุณ"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <input
+            className={inputCls}
+            placeholder="เบอร์โทร"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+          />
+          <textarea
+            className={`${inputCls} min-h-[120px] resize-y`}
+            placeholder="ข้อความ"
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+          />
           <button
             type="submit"
-            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-royal-blue px-6 py-3 font-semibold text-bright-sky transition hover:bg-deep-blue"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-royal-blue py-3.5 text-sm font-bold text-white shadow-lg shadow-royal-blue/25 transition hover:brightness-110 active:scale-[0.98]"
           >
             <Send className="size-4" />
             ส่งข้อความ
           </button>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            หรือโทร {company.phone} · {company.email}
-          </p>
         </form>
       </div>
     </div>
