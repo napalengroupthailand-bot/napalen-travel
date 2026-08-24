@@ -80,6 +80,19 @@ export type SiteStats = {
   totalCustomers: string
 }
 
+/** โรงแรมสำหรับนำทางกลับที่พัก */
+export type Hotel = {
+  id: string
+  name: string
+  address: string
+  phone: string
+  image: string
+  /** พิกัด (ถ้ามี จะนำทางแม่นยำ) */
+  lat?: number
+  lng?: number
+  city?: string
+}
+
 export type SiteSettings = {
   /** YouTube video ID หรือ full URL สำหรับหน้าปก */
   youtubeHeroUrl: string
@@ -87,6 +100,7 @@ export type SiteSettings = {
   testimonials: Testimonial[]
   staffContacts: StaffContact[]
   stats: SiteStats
+  hotels: Hotel[]
 }
 
 export const STATUS_LABELS: Record<RegStatus, string> = {
@@ -150,6 +164,28 @@ export const defaultSettings: SiteSettings = {
     { id: 's3', name: 'คุณซากีนะฮ์', role: 'ฝ่ายลูกค้าสัมพันธ์', phone: '083-333-3333' },
   ],
   stats: defaultStats,
+  hotels: [
+    {
+      id: 'h1',
+      name: 'Makkah Clock Royal Tower',
+      address: 'Ibrahim Al Khalil Rd, Makkah 24231, Saudi Arabia',
+      phone: '+966-12-571-1111',
+      image: '/images/grand-mosque.png',
+      lat: 21.4190,
+      lng: 39.8256,
+      city: 'มักกะฮ์',
+    },
+    {
+      id: 'h2',
+      name: 'Madinah Hilton',
+      address: 'Central Area, Madinah 42311, Saudi Arabia',
+      phone: '+966-14-826-6666',
+      image: '/images/medina-mosque.png',
+      lat: 24.4672,
+      lng: 39.6111,
+      city: 'มะดีนะฮ์',
+    },
+  ],
 }
 
 export const defaultPackages: Package[] = [
