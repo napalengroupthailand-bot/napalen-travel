@@ -50,67 +50,58 @@ export function ServiceView({ type }: { type: PackageType }) {
   const list = packages.filter((p) => p.type === type)
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative flex min-h-[42vh] items-center justify-center overflow-hidden">
-        <img
-          src={c.hero || '/placeholder.svg'}
-          alt={c.title}
-          crossOrigin="anonymous"
-          className="absolute inset-0 size-full object-cover"
-        />
-        <div className="absolute inset-0 bg-deep-blue/80" />
-        <div className="relative z-10 mx-auto max-w-2xl px-4 py-16 text-center">
-          <h1 className="text-3xl font-bold text-bright-sky sm:text-4xl">{c.title}</h1>
-          <p className="mx-auto mt-4 text-pretty text-sm leading-relaxed text-bright-sky/85 sm:text-base">
+    <div className="page-enter">
+      <section className="relative flex min-h-[36vh] items-center justify-center overflow-hidden">
+        <img src={c.hero || '/placeholder.svg'} alt={c.title} className="absolute inset-0 size-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/75 via-deep-blue/80 to-background" />
+        <div className="relative z-10 mx-auto max-w-2xl px-4 py-14 text-center">
+          <h1 className="text-3xl font-bold text-white sm:text-4xl animate-float-up">{c.title}</h1>
+          <p className="mx-auto mt-4 text-pretty text-sm leading-relaxed text-white/85 sm:text-base animate-float-up">
             {c.intro}
           </p>
         </div>
       </section>
 
-      {/* Knowledge / prep */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
+      <section className="mx-auto max-w-7xl px-4 py-12">
         <SectionHeading eyebrow="เตรียมความพร้อม" title={c.knowledgeTitle} />
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {c.steps.map((s, i) => (
-            <div
-              key={s.title}
-              className="rounded-2xl border border-luxury-gold/20 bg-card p-6 shadow-lg"
-            >
-              <div className="flex size-12 items-center justify-center rounded-xl bg-royal-blue/10 text-royal-blue">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 stagger">
+          {c.steps.map((s) => (
+            <div key={s.title} className="soft-card lift p-5">
+              <div className="flex size-12 items-center justify-center rounded-2xl bg-royal-blue/10 text-royal-blue">
                 <s.icon className="size-6" />
               </div>
-              <p className="mt-4 text-xs font-semibold text-luxury-gold">ขั้นตอนที่ {i + 1}</p>
-              <h3 className="mt-1 font-semibold text-deep-blue">{s.title}</h3>
+              <h3 className="mt-4 font-bold text-deep-blue">{s.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Packages */}
-      <section className="bg-bright-sky px-4 py-16">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading
-            eyebrow="แพ็กเกจ"
-            title={`แพ็กเกจ${c.title.replace('บริการ', '')}`}
-            subtitle="เลือกแพ็กเกจที่เหมาะกับท่าน ทุกแพ็กเกจรวมการดูแลจากทีมงานมืออาชีพ"
-          />
-          {list.length ? (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {list.map((p) => (
-                <PackageCard key={p.id} pkg={p} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground">ยังไม่มีแพ็กเกจในขณะนี้</p>
-          )}
+      <section className="mx-auto max-w-7xl px-4 pb-12">
+        <SectionHeading
+          eyebrow="แพ็กเกจ"
+          title={`แพ็กเกจ${type === 'hajj' ? 'ฮัจญ์' : 'อุมเราะห์'}`}
+          subtitle="เลือกแพ็กเกจที่เหมาะสมกับท่าน"
+        />
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {list.map((pkg) => (
+            <PackageCard key={pkg.id} pkg={pkg} />
+          ))}
         </div>
+        {list.length === 0 && (
+          <p className="py-12 text-center text-muted-foreground">ยังไม่มีแพ็กเกจในหมวดนี้</p>
+        )}
       </section>
 
-      {/* Registration */}
-      <section id="register" className="mx-auto max-w-3xl scroll-mt-24 px-4 py-16">
-        <RegistrationForm type={type} />
+      <section className="mx-auto max-w-3xl px-4 pb-16">
+        <div className="soft-card p-6 sm:p-8">
+          <SectionHeading
+            eyebrow="สมัคร"
+            title={`สนใจ${type === 'hajj' ? 'ฮัจญ์' : 'อุมเราะห์'}?`}
+            subtitle="กรอกแบบฟอร์ม ทีมงานจะติดต่อกลับ"
+          />
+          <RegistrationForm defaultType={type} />
+        </div>
       </section>
     </div>
   )
