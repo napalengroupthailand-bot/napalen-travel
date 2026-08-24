@@ -23,13 +23,13 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-bright-sky: #f1f5f9;
-  --color-deep-blue: #0a1428;
-  --color-royal-blue: #1e40af;
-  --color-light-cyan: #06b6d4;
+  --color-bright-sky: #f0f5fb;
+  --color-deep-blue: #0a1628;
+  --color-royal-blue: #1a4db5;
+  --color-light-cyan: #38bdf8;
   --color-luxury-gold: #d4af37;
   --color-dark-gold: #b45309;
-  --color-soft-mint: #e8eef8;
+  --color-soft-mint: #e8f0fb;
 
   --font-sans: var(--font-prompt), 'Segoe UI', sans-serif;
   --font-arabic: var(--font-amiri), serif;
@@ -42,25 +42,25 @@
 
 :root {
   color-scheme: light;
-  --background: #f1f5f9;
-  --foreground: #0a1428;
+  --background: #eef3f9;
+  --foreground: #0a1628;
   --card: #ffffff;
-  --card-foreground: #0a1428;
+  --card-foreground: #0a1628;
   --popover: #ffffff;
-  --popover-foreground: #0a1428;
-  --primary: #1e40af;
-  --primary-foreground: #f1f5f9;
-  --secondary: #e2e8f0;
-  --secondary-foreground: #0a1428;
-  --muted: #e2e8f0;
-  --muted-foreground: #475569;
+  --popover-foreground: #0a1628;
+  --primary: #1a4db5;
+  --primary-foreground: #f0f5fb;
+  --secondary: #e2eaf6;
+  --secondary-foreground: #0a1628;
+  --muted: #e2eaf6;
+  --muted-foreground: #5a6d85;
   --accent: #d4af37;
-  --accent-foreground: #0a1428;
+  --accent-foreground: #0a1628;
   --destructive: #dc2626;
-  --border: #cbd5e1;
-  --input: #cbd5e1;
-  --ring: #1e40af;
-  --radius: 1rem;
+  --border: #d0dceb;
+  --input: #d0dceb;
+  --ring: #1a4db5;
+  --radius: 1.25rem;
 }
 
 @layer base {
@@ -72,10 +72,12 @@
   }
 }
 
+/* Soft ambient like Salaam app */
 .noise-overlay {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(30, 64, 175, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 175, 55, 0.06), transparent);
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(26, 77, 181, 0.12), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(56, 189, 248, 0.08), transparent 50%),
+    linear-gradient(180deg, #eef3f9 0%, #f7f9fc 100%);
 }
 
 @keyframes pulse-slow {
@@ -110,7 +112,15 @@
 }
 
 .soft-card {
-  @apply rounded-2xl border border-border/60 bg-card shadow-[0_4px_24px_rgba(10,20,40,0.06)];
+  @apply rounded-[1.5rem] border border-white/80 bg-white shadow-[0_8px_32px_rgba(10,22,40,0.08)];
+}
+
+.app-page {
+  @apply mx-auto max-w-lg px-4 py-5;
+}
+
+.app-header-bar {
+  @apply mb-4 flex items-center gap-3;
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
