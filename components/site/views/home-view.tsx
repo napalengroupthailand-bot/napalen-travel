@@ -7,6 +7,7 @@ import { useNav } from '../nav'
 import { SectionHeading } from '../package-card'
 import { youtubeEmbedUrl, extractYoutubeId } from '@/lib/site-data'
 import { tapFeedback } from '@/lib/sfx'
+import { TranslateBox } from '../translate-box'
 
 export function HomeView() {
   const { company, settings } = useStore()
@@ -152,7 +153,9 @@ export function HomeView() {
         </div>
       </section>
 
-      <section className="relative z-10 -mt-14 px-4">
+      <TranslateBox />
+
+      <section className="relative z-10 -mt-2 px-4 pt-2">
         <div className="mx-auto grid max-w-4xl gap-1.5 rounded-2xl border border-border/60 bg-white/95 p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:rounded-[1.5rem] sm:p-6 animate-slide-up">
           {stats.map((s) => (
             <div
