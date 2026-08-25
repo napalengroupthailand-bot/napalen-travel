@@ -60,7 +60,7 @@ export function HomeView() {
 
   return (
     <div>
-    <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden sm:min-h-[80vh]">
       {videoStarted ? (
     <div className="absolute inset-0 overflow-hidden">
       <iframe
@@ -123,7 +123,7 @@ export function HomeView() {
   {/* เนื้อหาข้อความ + ปุ่มสมัคร เดิม ใส่ class relative z-10 ไว้ตามเดิม */}
 
   {/* เนื้อหาเดิม ... */}
-        <div className="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
+        <div className="relative z-10 mx-auto max-w-3xl px-3 pb-16 pt-16 text-center sm:px-4 sm:py-20">
           <p className="animate-float-up font-arabic text-2xl text-luxury-gold sm:text-3xl">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </p>
@@ -150,12 +150,16 @@ export function HomeView() {
               <ArrowRight className="size-4" />
             </button>
           </div>
+
+          {/* แปลภาษา — อยู่บนหน้าปก */}
+          <div className="mt-6 w-full max-w-3xl sm:mt-8">
+            <TranslateBox />
+          </div>
         </div>
       </section>
 
-      <TranslateBox />
 
-      <section className="relative z-10 mt-4 px-4 pt-2">
+      <section className="relative z-10 -mt-10 px-4 pt-2 sm:-mt-12">
         <div className="mx-auto grid max-w-4xl gap-1.5 rounded-2xl border border-border/60 bg-white/95 p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:rounded-[1.5rem] sm:p-6 animate-slide-up">
           {stats.map((s) => (
             <div
