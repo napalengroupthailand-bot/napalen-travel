@@ -43,20 +43,56 @@ export function HomeView() {
     const t = setInterval(() => setSlide((s) => (s + 1) % gallery.length), 4500)
     return () => clearInterval(t)
   }, [gallery.length])
-  const handleStartVideo = () => {
-    // มือถือ: กดเล่น/เปิดเสียง → เริ่มวิดีโอ (มี gesture แล้ว iOS ยอมเล่น)
-    setMuted(false)
+  /** ต้องใส่ src ในจังหวะคลิกเดียวกัน — iOS ไม่อนุญาต autoplay หลัง re-render */
+  const startVideoNow = (withSound: boolean) => {
+    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, !withSound, {
+      controls: true,
+    })
+    setMuted(!withSound)
     setVideoStarted(true)
+    // สำคัญ: ตั้ง src ทันทีใน user gesture (อย่ารอ React render)
+    const el = iframeRef.current
+    if (el) {
+      el.src = url
+    }
+  }
+
+  const handleStartVideo = () => {
+    startVideoNow(true)
   }
 
   const handleToggleMute = () => {
     if (!videoStarted) {
-      // กดเปิดเสียงครั้งแรกบนมือถือ = เริ่มเล่นวิดีโอพร้อมเสียง
-      setMuted(false)
-      setVideoStarted(true)
+      startVideoNow(true)
       return
     }
-    setMuted((m) => !m)
+    // สลับเสียงผ่านโหลด URL ใหม่ + postMessage
+    const nextMuted = !muted
+    setMuted(nextMuted)
+    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, nextMuted, {
+      controls: isMobile,
+    })
+    const el = iframeRef.current
+    if (el) {
+      el.src = url
+      // ลองสั่ง play ซ้ำ
+      try {
+        el.contentWindow?.postMessage(
+          JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
+          '*',
+        )
+        el.contentWindow?.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: nextMuted ? 'mute' : 'unMute',
+            args: [],
+          }),
+          '*',
+        )
+      } catch {
+        /* ignore */
+      }
+    }
   }
   const stats = [
     { icon: Heart, value: settings.stats.umrahCount, label: 'ผู้ไปอุมเราะห์' },
@@ -67,38 +103,38 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden sm:min-h-[80vh]">
-      {/* วิดีโอพื้นหลัง — มือถือเล่น mute + playsinline */}
+      {/* วิดีโอพื้นหลัง — iframe พร้อม ref ตลอด (มือถือตั้ง src ตอนกดปุ่ม) */}
       <div className="absolute inset-0 overflow-hidden">
-        {videoStarted && embedSrc ? (
-          <iframe
-            ref={iframeRef}
-            key={embedSrc}
-            src={embedSrc}
-            title="Hero video"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            playsInline
-            className={`absolute border-0 ${isMobile ? '' : 'pointer-events-none'}`}
-            style={{
-              top: '50%',
-              left: '50%',
-              width: '100vw',
-              height: '56.25vw',
-              minHeight: '100%',
-              minWidth: '177.78vh',
-              transform: 'translate(-50%, -50%)',
-            }}
-          />
-        ) : (
+        {/* ภาพปก โชว์จนกว่าจะเริ่มวิดีโอ */}
+        {!videoStarted && (
           <img
             src={ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png'}
             alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
-            className="absolute inset-0 size-full object-cover"
+            className="absolute inset-0 z-[1] size-full object-cover"
             onError={(e) => {
               ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
             }}
           />
         )}
+        <iframe
+          ref={iframeRef}
+          title="Hero video"
+          // PC: ใช้ src จาก state | มือถือ: ว่างไว้ แล้วใส่ตอนกด (gesture)
+          src={!isMobile && embedSrc ? embedSrc : undefined}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className={`absolute border-0 ${isMobile ? 'z-[2]' : 'pointer-events-none'}`}
+          style={{
+            top: '50%',
+            left: '50%',
+            width: '100vw',
+            height: '56.25vw',
+            minHeight: '100%',
+            minWidth: '177.78vh',
+            transform: 'translate(-50%, -50%)',
+            opacity: videoStarted ? 1 : 0,
+          }}
+        />
       </div>
 
       {/* มือถือ: ยังไม่เล่น — กดแล้วเปิดเสียง + เล่นวิดีโอ */}
