@@ -8,26 +8,12 @@ type Props = {
   onDone?: () => void
 }
 
-export function SplashScreen({ durationMs = 1400, onDone }: Props) {
+export function SplashScreen({ durationMs = 1800, onDone }: Props) {
   const [phase, setPhase] = useState<'in' | 'out' | 'gone'>('in')
-  const [isMobile, setIsMobile] = useState(false)
-  const [canAutoClose, setCanAutoClose] = useState(false)
 
   useEffect(() => {
-    const mobile =
-      typeof window !== 'undefined' &&
-      (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
-        window.matchMedia('(max-width: 768px)').matches)
-    setIsMobile(!!mobile)
-    // เดสก์ท็อปปิดเอง / มือถือรอแตะ (เพื่อปลดล็อก autoplay วิดีโอ)
-    const t = setTimeout(() => {
-      if (!mobile) {
-        setPhase('out')
-      } else {
-        setCanAutoClose(true)
-      }
-    }, durationMs)
-    return () => clearTimeout(t)
+    const t1 = setTimeout(() => setPhase('out'), durationMs)
+    return () => clearTimeout(t1)
   }, [durationMs])
 
   useEffect(() => {
@@ -35,20 +21,9 @@ export function SplashScreen({ durationMs = 1400, onDone }: Props) {
     const t = setTimeout(() => {
       setPhase('gone')
       onDone?.()
-    }, 450)
+    }, 500)
     return () => clearTimeout(t)
   }, [phase, onDone])
-
-  const enter = () => {
-    if (phase === 'out' || phase === 'gone') return
-    // สำคัญ: เกิดจาก user gesture → ปลดล็อกเล่นวิดีโอบน iOS
-    try {
-      sessionStorage.setItem('napalen-user-gesture', '1')
-    } catch {
-      /* ignore */
-    }
-    setPhase('out')
-  }
 
   if (phase === 'gone') return null
 
@@ -57,32 +32,59 @@ export function SplashScreen({ durationMs = 1400, onDone }: Props) {
       className={`splash-screen fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-deep-blue ${
         phase === 'out' ? 'splash-out' : 'splash-in'
       }`}
-      onClick={enter}
-      onTouchStart={enter}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') enter()
-      }}
-      aria-label="แตะเพื่อเข้าสู่เว็บ"
+      aria-hidden={phase === 'out'}
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="splash-glow absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-royal-blue/40 blur-3xl" />
+        <div className="splash-glow absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-royal-blue/35 blur-3xl" />
       </div>
 
-      <div className="relative flex flex-col items-center gap-4">
-        <div className="splash-logo relative">
-          <span className="absolute -inset-3 rounded-full bg-white/10 blur-md" />
+      <div className="relative flex flex-col items-center gap-5">
+        {/* โลโก้ + วงโหลดหมุน */}
+        <div className="splash-logo-wrap relative flex size-32 items-center justify-center sm:size-36">
+          {/* วงกลมโหลดรอบโลโก้ */}
+          <svg
+            className="splash-ring absolute inset-0 size-full"
+            viewBox="0 0 100 100"
+            aria-hidden
+          >
+            <circle
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="rgba(255,255,255,0.12)"
+              strokeWidth="2.5"
+            />
+            <circle
+              className="splash-ring-arc"
+              cx="50"
+              cy="50"
+              r="46"
+              fill="none"
+              stroke="url(#splashGold)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray="70 220"
+            />
+            <defs>
+              <linearGradient id="splashGold" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#d4af37" />
+                <stop offset="100%" stopColor="#f5e6a8" />
+              </linearGradient>
+            </defs>
+          </svg>
+
           <img
             src={COMPANY_LOGO || '/logo-napalen.png'}
             alt="NAPALEN TRAVEL & TOUR"
             width={112}
             height={112}
-            className="relative size-24 rounded-full border-2 border-luxury-gold/80 bg-bright-sky object-cover shadow-[0_0_40px_rgba(255,255,255,0.25)] sm:size-28"
+            className="splash-logo-img relative size-[4.75rem] rounded-full border-2 border-luxury-gold/80 bg-bright-sky object-cover shadow-[0_0_36px_rgba(255,255,255,0.22)] sm:size-[5.25rem]"
             draggable={false}
           />
         </div>
-        <div className="text-center">
+
+        <div className="splash-text text-center">
           <p className="text-base font-semibold tracking-wide text-bright-sky sm:text-lg">
             นาปาเลน แทรเวิล
           </p>
@@ -90,20 +92,6 @@ export function SplashScreen({ durationMs = 1400, onDone }: Props) {
             NAPALEN TRAVEL &amp; TOUR
           </p>
         </div>
-
-        {isMobile ? (
-          <p
-            className={`mt-4 text-sm font-medium text-white/80 transition-opacity ${
-              canAutoClose ? 'animate-pulse opacity-100' : 'opacity-60'
-            }`}
-          >
-            แตะเพื่อเข้าสู่เว็บ
-          </p>
-        ) : (
-          <div className="splash-bar mt-3 h-1 w-16 overflow-hidden rounded-full bg-white/15">
-            <div className="splash-bar-fill h-full rounded-full bg-luxury-gold" />
-          </div>
-        )}
       </div>
     </div>
   )
