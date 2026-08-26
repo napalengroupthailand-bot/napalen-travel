@@ -25,16 +25,19 @@ export function HomeView() {
     ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
     : ''
 
-  // PC → เล่นอัตโนมัติ | มือถือ → ต้องกดปุ่ม (นโยบาย iOS)
+  // PC + มือถือ: ลองเล่นอัตโนมัติแบบปิดเสียง (iOS อนุญาตเมื่อ mute + playsinline)
   useEffect(() => {
     const mobile =
       typeof window !== 'undefined' &&
-      (/iPhone|iPod|Android/i.test(navigator.userAgent) ||
+      (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
         (window.matchMedia && window.matchMedia('(max-width: 768px)').matches))
     setIsMobile(!!mobile)
-    if (!mobile) {
+    setMuted(true)
+    // หน่วงนิดหน่อยหลัง mount / หลัง splash เพื่อให้ iOS พร้อม
+    const t = setTimeout(() => {
       setVideoStarted(true)
-    }
+    }, mobile ? 400 : 0)
+    return () => clearTimeout(t)
   }, [])
 
   useEffect(() => {
@@ -45,12 +48,6 @@ export function HomeView() {
   const handleStartVideo = () => {
     setMuted(true)
     setVideoStarted(true)
-    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, true, { controls: true })
-    requestAnimationFrame(() => {
-      if (iframeRef.current && !iframeRef.current.src) {
-        iframeRef.current.src = url
-      }
-    })
   }
   const stats = [
     { icon: Heart, value: settings.stats.umrahCount, label: 'ผู้ไปอุมเราะห์' },
@@ -61,51 +58,53 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden sm:min-h-[80vh]">
-      {videoStarted ? (
-    <div className="absolute inset-0 overflow-hidden">
-      <iframe
-        ref={iframeRef}
-        key={embedSrc || 'hero-video'}
-        src={embedSrc || undefined}
-        title="Hero video"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        className={`absolute border-0 ${isMobile ? '' : 'pointer-events-none'}`}
-        style={{
-          top: '50%',
-          left: '50%',
-          width: '100vw',
-          height: '56.25vw',
-          minHeight: '100%',
-          minWidth: '177.78vh',
-          transform: 'translate(-50%, -50%)',
-        }}
-      />
-    </div>
-  ) : (
-    <>
-      <img
-        src={ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png'}
-        alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
-        className="absolute inset-0 size-full object-cover"
-        onError={(e) => {
-          ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
-        }}
-      />
-      {ytId && (
+      {/* วิดีโอพื้นหลัง — มือถือเล่น mute + playsinline */}
+      <div className="absolute inset-0 overflow-hidden">
+        {videoStarted && embedSrc ? (
+          <iframe
+            ref={iframeRef}
+            key={embedSrc}
+            src={embedSrc}
+            title="Hero video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            playsInline
+            className={`absolute border-0 ${isMobile ? '' : 'pointer-events-none'}`}
+            style={{
+              top: '50%',
+              left: '50%',
+              width: '100vw',
+              height: '56.25vw',
+              minHeight: '100%',
+              minWidth: '177.78vh',
+              transform: 'translate(-50%, -50%)',
+            }}
+          />
+        ) : (
+          <img
+            src={ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png'}
+            alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
+            className="absolute inset-0 size-full object-cover"
+            onError={(e) => {
+              ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
+            }}
+          />
+        )}
+      </div>
+
+      {/* ปุ่มเล่นสำรอง — โชว์บนมือถือถ้ายังไม่เริ่ม หรือผู้ใช้ต้องการเริ่มใหม่ */}
+      {ytId && isMobile && !videoStarted && (
         <button
           type="button"
           onClick={handleStartVideo}
-          className="absolute left-1/2 top-[42%] z-20 flex size-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600 text-white shadow-2xl transition active:scale-90 hover:bg-red-700"
+          className="absolute left-1/2 top-[42%] z-20 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600/95 text-white shadow-2xl transition active:scale-90"
           aria-label="เล่นวิดีโอ"
         >
-          <svg viewBox="0 0 24 24" className="ml-1 size-10 fill-current">
+          <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current">
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
       )}
-    </>
-  )}
   <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
 
   {ytId && videoStarted && (
