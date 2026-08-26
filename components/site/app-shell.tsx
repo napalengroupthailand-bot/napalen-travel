@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { StoreProvider } from '@/components/site/store'
 import { ToastProvider } from '@/components/site/toast'
 import { NavContext, type View } from '@/components/site/nav'
@@ -21,11 +21,13 @@ import { HijriCalendarView } from '@/components/site/views/hijri-calendar-view'
 import { QuranView } from '@/components/site/views/quran-view'
 import { HotelsView } from '@/components/site/views/hotels-view'
 import { MobileBottomNav } from '@/components/site/mobile-bottom-nav'
+import { SplashScreen } from '@/components/site/splash-screen'
 
 export function AppShell() {
   const [view, setView] = useState<View>('home')
   const [articleId, setArticleId] = useState<string | null>(null)
   const [packageId, setPackageId] = useState<string | null>(null)
+  const [showSplash, setShowSplash] = useState(true)
 
   const navigate = useCallback((next: View, id?: string) => {
     setView(next)
@@ -48,6 +50,9 @@ export function AppShell() {
     <StoreProvider>
       <ToastProvider>
         <NavContext.Provider value={{ view, articleId, packageId, navigate }}>
+          {showSplash && (
+            <SplashScreen durationMs={1600} onDone={() => setShowSplash(false)} />
+          )}
           <div className="flex min-h-screen flex-col bg-background text-foreground">
             <TopBar />
             <Navbar />
