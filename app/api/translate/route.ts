@@ -2,19 +2,52 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const LANGS = new Set(['th', 'ar', 'en', 'ms'])
 
-/** แปลผ่าน MyMemory (ฟรี) — ไม่ต้องใช้ API key */
+/** Google Translate แบบฟรี (client=gtx) — คุณภาพดีกว่า MyMemory */
+async function translateGoogle(text: string, from: string, to: string) {
+  const url =
+    `https://translate.googleapis.com/translate_a/single` +
+    `?client=gtx&sl=${encodeURIComponent(from)}&tl=${encodeURIComponent(to)}` +
+    `&dt=t&q=${encodeURIComponent(text)}`
+
+  const res = await fetch(url, {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      Accept: '*/*',
+    },
+    next: { revalidate: 0 },
+  })
+  if (!res.ok) throw new Error(`google ${res.status}`)
+
+  const data = (await res.json()) as unknown
+  // รูปแบบ: [[["แปลแล้ว","ต้นฉบับ",...], ...], ...]
+  if (!Array.isArray(data) || !Array.isArray(data[0])) {
+    throw new Error('google bad shape')
+  }
+  const parts: string[] = []
+  for (const row of data[0]) {
+    if (Array.isArray(row) && typeof row[0] === 'string') {
+      parts.push(row[0])
+    }
+  }
+  const out = parts.join('').trim()
+  if (!out) throw new Error('google empty')
+  return out
+}
+
+/** สำรอง: MyMemory */
 async function translateMyMemory(text: string, from: string, to: string) {
   const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`
   const res = await fetch(url, { next: { revalidate: 0 } })
-  if (!res.ok) throw new Error('translate failed')
+  if (!res.ok) throw new Error('mymemory failed')
   const data = (await res.json()) as {
     responseData?: { translatedText?: string }
-    responseStatus?: number
   }
   const out = data.responseData?.translatedText?.trim()
-  if (!out) throw new Error('empty translation')
-  // MyMemory sometimes returns "PLEASE SELECT TWO DISTINCT LANGUAGES"
+  if (!out) throw new Error('mymemory empty')
   if (out.toUpperCase().includes('PLEASE SELECT')) throw new Error(out)
+  // กันผลแปลแปลก ๆ ที่คืนเป็น URL / error
+  if (out.startsWith('MYMEMORY WARNING')) throw new Error(out)
   return out
 }
 
@@ -39,11 +72,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'unsupported lang' }, { status: 400 })
     }
     if (from === to) {
-      return NextResponse.json({ text })
+      return NextResponse.json({ text, engine: 'same' })
     }
 
-    const translated = await translateMyMemory(text, from, to)
-    return NextResponse.json({ text: translated })
+    // ลอง Google ก่อน (แม่นกว่า) → ไม่ได้ค่อย MyMemory
+    try {
+      const translated = await translateGoogle(text, from, to)
+      return NextResponse.json({ text: translated, engine: 'google' })
+    } catch (e1) {
+      console.warn('google translate failed, fallback mymemory', e1)
+      const translated = await translateMyMemory(text, from, to)
+      return NextResponse.json({ text: translated, engine: 'mymemory' })
+    }
   } catch (e) {
     console.error('translate error', e)
     return NextResponse.json(
