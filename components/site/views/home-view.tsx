@@ -25,7 +25,7 @@ export function HomeView() {
     ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
     : ''
 
-  // PC: เล่นทันที | มือถือ: เล่นหลังมี gesture (แตะ splash / แตะจอ) — นโยบาย iOS
+  // PC: เล่นทันที (mute) | มือถือ: โชว์ภาพปก จนกดปุ่มเปิดเสียง/เล่น
   useEffect(() => {
     const mobile =
       typeof window !== 'undefined' &&
@@ -33,44 +33,8 @@ export function HomeView() {
         (window.matchMedia && window.matchMedia('(max-width: 768px)').matches))
     setIsMobile(!!mobile)
     setMuted(true)
-
     if (!mobile) {
       setVideoStarted(true)
-      return
-    }
-
-    const start = () => {
-      setMuted(true)
-      setVideoStarted(true)
-    }
-
-    // ถ้าเพิ่งแตะ splash ไว้แล้ว
-    try {
-      if (sessionStorage.getItem('napalen-user-gesture') === '1') {
-        start()
-        return
-      }
-    } catch {
-      /* ignore */
-    }
-
-    const onGesture = () => {
-      start()
-      window.removeEventListener('touchstart', onGesture)
-      window.removeEventListener('pointerdown', onGesture)
-      window.removeEventListener('scroll', onGesture)
-      window.removeEventListener('click', onGesture)
-    }
-    window.addEventListener('touchstart', onGesture, { once: true, passive: true })
-    window.addEventListener('pointerdown', onGesture, { once: true })
-    window.addEventListener('scroll', onGesture, { once: true, passive: true })
-    window.addEventListener('click', onGesture, { once: true })
-
-    return () => {
-      window.removeEventListener('touchstart', onGesture)
-      window.removeEventListener('pointerdown', onGesture)
-      window.removeEventListener('scroll', onGesture)
-      window.removeEventListener('click', onGesture)
     }
   }, [])
 
@@ -80,8 +44,19 @@ export function HomeView() {
     return () => clearInterval(t)
   }, [gallery.length])
   const handleStartVideo = () => {
-    setMuted(true)
+    // มือถือ: กดเล่น/เปิดเสียง → เริ่มวิดีโอ (มี gesture แล้ว iOS ยอมเล่น)
+    setMuted(false)
     setVideoStarted(true)
+  }
+
+  const handleToggleMute = () => {
+    if (!videoStarted) {
+      // กดเปิดเสียงครั้งแรกบนมือถือ = เริ่มเล่นวิดีโอพร้อมเสียง
+      setMuted(false)
+      setVideoStarted(true)
+      return
+    }
+    setMuted((m) => !m)
   }
   const stats = [
     { icon: Heart, value: settings.stats.umrahCount, label: 'ผู้ไปอุมเราะห์' },
@@ -126,35 +101,33 @@ export function HomeView() {
         )}
       </div>
 
-      {/* มือถือ: ปุ่มเล่นถ้ายังไม่เริ่ม (หลังแตะ splash แล้วมักเริ่มเอง) */}
+      {/* มือถือ: ยังไม่เล่น — กดแล้วเปิดเสียง + เล่นวิดีโอ */}
       {ytId && isMobile && !videoStarted && (
         <button
           type="button"
           onClick={handleStartVideo}
           className="absolute left-1/2 top-[42%] z-20 flex flex-col items-center gap-2 -translate-x-1/2 -translate-y-1/2"
-          aria-label="เล่นวิดีโอ"
+          aria-label="เปิดเสียงและเล่นวิดีโอ"
         >
-          <span className="flex size-16 items-center justify-center rounded-full bg-red-600/95 text-white shadow-2xl transition active:scale-90">
-            <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+          <span className="flex size-16 items-center justify-center rounded-full bg-white/20 text-white shadow-2xl ring-2 ring-white/40 backdrop-blur transition active:scale-90">
+            <Volume2 className="size-7" />
           </span>
-          <span className="rounded-full bg-black/50 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
-            แตะเพื่อเล่นวิดีโอ
+          <span className="rounded-full bg-black/55 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
+            เปิดเสียงเพื่อเล่นวิดีโอ
           </span>
         </button>
       )}
   <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
 
-  {ytId && videoStarted && (
+  {ytId && (videoStarted || isMobile) && (
     <button
       type="button"
-      onClick={() => setMuted((m) => !m)}
+      onClick={handleToggleMute}
       className="absolute bottom-6 right-6 z-20 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 text-sm text-white backdrop-blur transition hover:bg-black/70"
-      aria-label={muted ? 'เปิดเสียง' : 'ปิดเสียง'}
+      aria-label={muted || !videoStarted ? 'เปิดเสียง' : 'ปิดเสียง'}
     >
-      {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
-      <span className="hidden sm:inline">{muted ? 'เปิดเสียง' : 'ปิดเสียง'}</span>
+      {muted || !videoStarted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+      <span className="hidden sm:inline">{muted || !videoStarted ? 'เปิดเสียง' : 'ปิดเสียง'}</span>
     </button>
   )}
 
