@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Languages, ArrowLeftRight, Copy, Check, Loader2, X, Globe } from 'lucide-react'
+import { Languages, ArrowLeftRight, Copy, Check, Loader2, X, Globe, Volume2, Square } from 'lucide-react'
 
 const LANGS = [
   { code: 'th', label: 'ไทย', short: 'TH' },
@@ -22,6 +22,7 @@ export function TranslateBox() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
+  const [speaking, setSpeaking] = useState(false)
   const [typing, setTyping] = useState(false)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const typeTimer = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -112,6 +113,14 @@ export function TranslateBox() {
     }
   }, [source, from, to, doTranslate, open])
 
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && window.speechSynthesis) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
   const swap = () => {
     setFrom(to)
     setTo(from)
@@ -129,6 +138,58 @@ export function TranslateBox() {
       /* ignore */
     }
   }
+
+  const stopSpeak = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel()
+    }
+    setSpeaking(false)
+  }
+
+  const speak = (text: string, lang: LangCode) => {
+    if (!text.trim() || typeof window === 'undefined' || !window.speechSynthesis) return
+    window.speechSynthesis.cancel()
+
+    const langMap: Record<LangCode, string> = {
+      th: 'th-TH',
+      ar: 'ar-SA',
+      en: 'en-US',
+      ms: 'ms-MY',
+    }
+    const utter = new SpeechSynthesisUtterance(text)
+    utter.lang = langMap[lang]
+    utter.rate = 0.95
+    utter.pitch = 1
+
+    // เลือก voice ที่ใกล้เคียงภาษานั้น ถ้ามีในเครื่อง
+    const pickVoice = () => {
+      const voices = window.speechSynthesis.getVoices()
+      const code = langMap[lang].toLowerCase()
+      const short = lang.toLowerCase()
+      const found =
+        voices.find((v) => v.lang.toLowerCase() === code) ||
+        voices.find((v) => v.lang.toLowerCase().startsWith(short))
+      if (found) utter.voice = found
+      setSpeaking(true)
+      utter.onend = () => setSpeaking(false)
+      utter.onerror = () => setSpeaking(false)
+      window.speechSynthesis.speak(utter)
+    }
+
+    const voices = window.speechSynthesis.getVoices()
+    if (voices.length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.onvoiceschanged = null
+        pickVoice()
+      }
+      // fallback บางเครื่อง
+      setTimeout(pickVoice, 250)
+    } else {
+      pickVoice()
+    }
+  }
+
+
 
   return (
     <div className="relative flex w-full flex-col items-center">
@@ -179,7 +240,10 @@ export function TranslateBox() {
               </span>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  stopSpeak()
+                  setOpen(false)
+                }}
                 className="ml-auto flex size-7 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white transition hover:bg-white/25 active:scale-90"
                 aria-label="ปิด"
               >
@@ -235,9 +299,21 @@ export function TranslateBox() {
 
               <div className="grid gap-2 sm:grid-cols-2 sm:gap-3">
                 <div>
-                  <label className="mb-1 block text-[10px] font-semibold text-white/80">
-                    ต้นทาง · {LANGS.find((l) => l.code === from)?.label}
-                  </label>
+                  <div className="mb-1 flex items-center justify-between">
+                    <label className="text-[10px] font-semibold text-white/80">
+                      ต้นทาง · {LANGS.find((l) => l.code === from)?.label}
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => (speaking ? stopSpeak() : speak(source, from))}
+                      disabled={!source.trim()}
+                      className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium text-white/85 transition hover:bg-white/15 disabled:opacity-40"
+                      aria-label="อ่านต้นทาง"
+                    >
+                      <Volume2 className="size-3.5" />
+                      <span className="hidden sm:inline">ฟัง</span>
+                    </button>
+                  </div>
                   <textarea
                     value={source}
                     onChange={(e) => setSource(e.target.value)}
@@ -264,6 +340,16 @@ export function TranslateBox() {
                     </label>
                     <div className="flex items-center gap-1">
                       {loading && <Loader2 className="size-3.5 animate-spin text-white" />}
+                      <button
+                        type="button"
+                        onClick={() => (speaking ? stopSpeak() : speak(result, to))}
+                        disabled={!result}
+                        className="flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium text-white/85 transition hover:bg-white/15 disabled:opacity-40"
+                        aria-label={speaking ? 'หยุดอ่าน' : 'อ่านออกเสียง'}
+                      >
+                        {speaking ? <Square className="size-3 fill-current" /> : <Volume2 className="size-3.5" />}
+                        <span className="hidden sm:inline">{speaking ? 'หยุด' : 'ฟัง'}</span>
+                      </button>
                       <button
                         type="button"
                         onClick={copyOut}
