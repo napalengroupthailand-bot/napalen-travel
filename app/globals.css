@@ -232,7 +232,7 @@
 
 /* page content enter */
 .page-enter {
-  animation: slide-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: page-fade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -267,14 +267,20 @@
 
 /* smoother page crossfade */
 .page-enter {
-  animation: page-fade 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: page-fade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes page-fade {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.985);
-    filter: blur(2px);
+    transform: translateY(16px);
+    filter: blur(3px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -545,4 +551,37 @@
   box-shadow:
     0 0 12px rgba(255, 255, 255, 0.5),
     inset 0 0 8px rgba(255, 255, 255, 0.35);
+}
+
+/* Dimensional icon shadows */
+.icon-depth {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.12))
+    drop-shadow(0 2px 4px rgba(10, 30, 60, 0.15));
+}
+.icon-depth-active {
+  filter: drop-shadow(0 1px 1px rgba(26, 77, 181, 0.2))
+    drop-shadow(0 3px 8px rgba(56, 189, 248, 0.35))
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+/* tool tiles on home */
+.icon-tile {
+  filter: drop-shadow(0 2px 4px rgba(10, 30, 60, 0.1));
+  box-shadow:
+    0 2px 6px rgba(10, 30, 60, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.icon-tile:hover,
+.icon-tile:active {
+  filter: drop-shadow(0 4px 10px rgba(26, 77, 181, 0.25));
+  box-shadow:
+    0 4px 14px rgba(26, 77, 181, 0.18),
+    0 0 12px rgba(56, 189, 248, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* globe translate button */
+.icon-depth-glow {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25))
+    drop-shadow(0 0 12px rgba(255, 255, 255, 0.55));
 }
