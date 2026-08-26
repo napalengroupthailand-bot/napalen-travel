@@ -37,6 +37,13 @@ export function TranslateBox() {
       setTyping(false)
       return
     }
+    // ภาษาอาหรับ (RTL) แสดงทั้งประโยคทันที — พิมพ์ทีละตัวจะทำให้ข้อความเพี้ยน
+    const isRtl = to === 'ar'
+    if (isRtl) {
+      setDisplayResult(result)
+      setTyping(false)
+      return
+    }
     setTyping(true)
     setDisplayResult('')
     let i = 0
@@ -52,7 +59,7 @@ export function TranslateBox() {
     return () => {
       if (typeTimer.current) clearInterval(typeTimer.current)
     }
-  }, [result])
+  }, [result, to])
 
   const doTranslate = useCallback(async (text: string, f: LangCode, t: LangCode) => {
     const trimmed = text.trim()
@@ -139,7 +146,7 @@ export function TranslateBox() {
           <span className="absolute inset-0 rounded-full border border-white/40 bg-white/15 shadow-[0_0_24px_rgba(255,255,255,0.35)] backdrop-blur-md transition group-hover:bg-white/25 group-hover:shadow-[0_0_36px_rgba(255,255,255,0.55)] group-active:scale-95" />
           {/* โลก */}
           <Globe
-            className="relative z-[1] size-8 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.9)] sm:size-9"
+            className="icon-depth-glow relative z-[1] size-8 text-white sm:size-9"
             strokeWidth={1.5}
           />
           {/* ไอคอนแปล ตรงกลางโลก */}
@@ -270,7 +277,7 @@ export function TranslateBox() {
                   </div>
                   <div
                     dir={to === 'ar' ? 'rtl' : 'ltr'}
-                    className={`typing-glow-box min-h-[3.5rem] rounded-xl border border-white/30 bg-black/25 px-2.5 py-2 text-sm backdrop-blur-md sm:min-h-[5rem] sm:rounded-2xl sm:px-3 sm:py-2.5 ${
+                    className={`typing-glow-box min-h-[3.5rem] rounded-xl border border-white/30 bg-black/25 px-2.5 py-2 text-sm backdrop-blur-md sm:min-h-[5rem] sm:rounded-2xl sm:px-3 sm:py-2.5 ${to === 'ar' ? '[unicode-bidi:plaintext]' : ''} ${
                       to === 'ar' ? 'font-arabic text-base leading-relaxed' : ''
                     } ${typing || loading ? 'is-typing' : ''}`}
                   >
