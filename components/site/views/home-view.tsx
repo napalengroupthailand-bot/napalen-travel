@@ -25,7 +25,7 @@ export function HomeView() {
     ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
     : ''
 
-  // PC + มือถือ: ลองเล่นอัตโนมัติแบบปิดเสียง (iOS อนุญาตเมื่อ mute + playsinline)
+  // PC: เล่นทันที | มือถือ: เล่นหลังมี gesture (แตะ splash / แตะจอ) — นโยบาย iOS
   useEffect(() => {
     const mobile =
       typeof window !== 'undefined' &&
@@ -33,11 +33,45 @@ export function HomeView() {
         (window.matchMedia && window.matchMedia('(max-width: 768px)').matches))
     setIsMobile(!!mobile)
     setMuted(true)
-    // หน่วงนิดหน่อยหลัง mount / หลัง splash เพื่อให้ iOS พร้อม
-    const t = setTimeout(() => {
+
+    if (!mobile) {
       setVideoStarted(true)
-    }, mobile ? 400 : 0)
-    return () => clearTimeout(t)
+      return
+    }
+
+    const start = () => {
+      setMuted(true)
+      setVideoStarted(true)
+    }
+
+    // ถ้าเพิ่งแตะ splash ไว้แล้ว
+    try {
+      if (sessionStorage.getItem('napalen-user-gesture') === '1') {
+        start()
+        return
+      }
+    } catch {
+      /* ignore */
+    }
+
+    const onGesture = () => {
+      start()
+      window.removeEventListener('touchstart', onGesture)
+      window.removeEventListener('pointerdown', onGesture)
+      window.removeEventListener('scroll', onGesture)
+      window.removeEventListener('click', onGesture)
+    }
+    window.addEventListener('touchstart', onGesture, { once: true, passive: true })
+    window.addEventListener('pointerdown', onGesture, { once: true })
+    window.addEventListener('scroll', onGesture, { once: true, passive: true })
+    window.addEventListener('click', onGesture, { once: true })
+
+    return () => {
+      window.removeEventListener('touchstart', onGesture)
+      window.removeEventListener('pointerdown', onGesture)
+      window.removeEventListener('scroll', onGesture)
+      window.removeEventListener('click', onGesture)
+    }
   }, [])
 
   useEffect(() => {
@@ -92,17 +126,22 @@ export function HomeView() {
         )}
       </div>
 
-      {/* ปุ่มเล่นสำรอง — โชว์บนมือถือถ้ายังไม่เริ่ม หรือผู้ใช้ต้องการเริ่มใหม่ */}
+      {/* มือถือ: ปุ่มเล่นถ้ายังไม่เริ่ม (หลังแตะ splash แล้วมักเริ่มเอง) */}
       {ytId && isMobile && !videoStarted && (
         <button
           type="button"
           onClick={handleStartVideo}
-          className="absolute left-1/2 top-[42%] z-20 flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-red-600/95 text-white shadow-2xl transition active:scale-90"
+          className="absolute left-1/2 top-[42%] z-20 flex flex-col items-center gap-2 -translate-x-1/2 -translate-y-1/2"
           aria-label="เล่นวิดีโอ"
         >
-          <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current">
-            <path d="M8 5v14l11-7z" />
-          </svg>
+          <span className="flex size-16 items-center justify-center rounded-full bg-red-600/95 text-white shadow-2xl transition active:scale-90">
+            <svg viewBox="0 0 24 24" className="ml-1 size-8 fill-current">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </span>
+          <span className="rounded-full bg-black/50 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
+            แตะเพื่อเล่นวิดีโอ
+          </span>
         </button>
       )}
   <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
