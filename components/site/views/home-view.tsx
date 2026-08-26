@@ -176,27 +176,27 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* เครื่องมือ — ไอคอนเล็กลง + โรงแรม */}
+      {/* เครื่องมือ — ไอคอนใหญ่ สีดำเรียบ */}
       <section className="mx-auto max-w-lg px-3 pt-6 sm:px-4">
-        <div className="soft-card light-sweep relative px-1.5 py-2.5 sm:px-4 sm:py-4 animate-scale-in">
-          <div className="grid grid-cols-5 gap-0.5 sm:gap-2 stagger">
+        <div className="soft-card relative px-2 py-3 sm:px-4 sm:py-4 animate-scale-in">
+          <div className="grid grid-cols-5 gap-1 sm:gap-2 stagger">
             {[
-              { view: 'qibla' as const, label: 'กิบลัต', icon: Compass, bg: 'bg-royal-blue/10 text-royal-blue' },
-              { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot, bg: 'bg-sky-100 text-sky-700' },
-              { view: 'hotels' as const, label: 'โรงแรม', icon: Hotel, bg: 'bg-emerald-100 text-emerald-700' },
-              { view: 'quran' as const, label: 'กุรอาน', icon: BookOpen, bg: 'bg-indigo-100 text-indigo-700' },
-              { view: 'hijri-calendar' as const, label: 'ปฏิทิน', icon: CalendarDays, bg: 'bg-amber-100 text-amber-700' },
+              { view: 'qibla' as const, label: 'กิบลัต', icon: Compass },
+              { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot },
+              { view: 'hotels' as const, label: 'โรงแรม', icon: Hotel },
+              { view: 'quran' as const, label: 'กุรอาน', icon: BookOpen },
+              { view: 'hijri-calendar' as const, label: 'ปฏิทิน', icon: CalendarDays },
             ].map((tool) => (
               <button
                 key={tool.view}
                 type="button"
                 onClick={(e) => { tapFeedback(e); navigate(tool.view) }}
-                className="flex flex-col items-center gap-0.5 py-0.5"
+                className="flex flex-col items-center gap-1.5 py-1 pressable"
               >
-                <span className={`icon-tile flex size-9 items-center justify-center rounded-xl sm:size-11 sm:rounded-2xl ${tool.bg}`}>
-                  <tool.icon className="size-4 sm:size-5" strokeWidth={1.75} />
+                <span className="flex size-12 items-center justify-center rounded-2xl bg-black/[0.04] text-deep-blue transition-transform duration-200 active:scale-90 sm:size-14">
+                  <tool.icon className="size-6 text-deep-blue sm:size-7" strokeWidth={1.75} />
                 </span>
-                <span className="text-[9px] font-semibold text-deep-blue sm:text-[11px]">{tool.label}</span>
+                <span className="text-[10px] font-semibold text-deep-blue sm:text-xs">{tool.label}</span>
               </button>
             ))}
           </div>
