@@ -367,7 +367,7 @@ export function youtubeEmbedUrl(
     controls: options?.controls ? '1' : '0',
     rel: '0',
     modestbranding: '1',
-    playsinline: '1',
+    playsinline: '1', // สำคัญมากบน iPhone
     enablejsapi: '1',
     fs: '0',
     iv_load_policy: '3',
@@ -376,7 +376,8 @@ export function youtubeEmbedUrl(
   if (typeof window !== 'undefined' && window.location?.origin) {
     params.set('origin', window.location.origin)
   }
-  return `https://www.youtube.com/embed/${id}?${params.toString()}`
+  // nocookie มัก autoplay บนมือถือได้ดีกว่า
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`
 }
 export const COMPANY_LOGO = '/logo-napalen.png'
 
