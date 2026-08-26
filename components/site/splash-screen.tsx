@@ -4,25 +4,51 @@ import { useEffect, useState } from 'react'
 import { COMPANY_LOGO } from '@/lib/site-data'
 
 type Props = {
-  /** แสดงกี่มิลลิวินาที ก่อนเริ่มเฟดออก */
   durationMs?: number
   onDone?: () => void
 }
 
-export function SplashScreen({ durationMs = 1600, onDone }: Props) {
+export function SplashScreen({ durationMs = 1400, onDone }: Props) {
   const [phase, setPhase] = useState<'in' | 'out' | 'gone'>('in')
+  const [isMobile, setIsMobile] = useState(false)
+  const [canAutoClose, setCanAutoClose] = useState(false)
 
   useEffect(() => {
-    const t1 = setTimeout(() => setPhase('out'), durationMs)
-    const t2 = setTimeout(() => {
+    const mobile =
+      typeof window !== 'undefined' &&
+      (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        window.matchMedia('(max-width: 768px)').matches)
+    setIsMobile(!!mobile)
+    // เดสก์ท็อปปิดเอง / มือถือรอแตะ (เพื่อปลดล็อก autoplay วิดีโอ)
+    const t = setTimeout(() => {
+      if (!mobile) {
+        setPhase('out')
+      } else {
+        setCanAutoClose(true)
+      }
+    }, durationMs)
+    return () => clearTimeout(t)
+  }, [durationMs])
+
+  useEffect(() => {
+    if (phase !== 'out') return
+    const t = setTimeout(() => {
       setPhase('gone')
       onDone?.()
-    }, durationMs + 500)
-    return () => {
-      clearTimeout(t1)
-      clearTimeout(t2)
+    }, 450)
+    return () => clearTimeout(t)
+  }, [phase, onDone])
+
+  const enter = () => {
+    if (phase === 'out' || phase === 'gone') return
+    // สำคัญ: เกิดจาก user gesture → ปลดล็อกเล่นวิดีโอบน iOS
+    try {
+      sessionStorage.setItem('napalen-user-gesture', '1')
+    } catch {
+      /* ignore */
     }
-  }, [durationMs, onDone])
+    setPhase('out')
+  }
 
   if (phase === 'gone') return null
 
@@ -31,7 +57,14 @@ export function SplashScreen({ durationMs = 1600, onDone }: Props) {
       className={`splash-screen fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-deep-blue ${
         phase === 'out' ? 'splash-out' : 'splash-in'
       }`}
-      aria-hidden={phase === 'out'}
+      onClick={enter}
+      onTouchStart={enter}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') enter()
+      }}
+      aria-label="แตะเพื่อเข้าสู่เว็บ"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="splash-glow absolute left-1/2 top-1/2 size-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-royal-blue/40 blur-3xl" />
@@ -57,9 +90,20 @@ export function SplashScreen({ durationMs = 1600, onDone }: Props) {
             NAPALEN TRAVEL &amp; TOUR
           </p>
         </div>
-        <div className="splash-bar mt-3 h-1 w-16 overflow-hidden rounded-full bg-white/15">
-          <div className="splash-bar-fill h-full rounded-full bg-luxury-gold" />
-        </div>
+
+        {isMobile ? (
+          <p
+            className={`mt-4 text-sm font-medium text-white/80 transition-opacity ${
+              canAutoClose ? 'animate-pulse opacity-100' : 'opacity-60'
+            }`}
+          >
+            แตะเพื่อเข้าสู่เว็บ
+          </p>
+        ) : (
+          <div className="splash-bar mt-3 h-1 w-16 overflow-hidden rounded-full bg-white/15">
+            <div className="splash-bar-fill h-full rounded-full bg-luxury-gold" />
+          </div>
+        )}
       </div>
     </div>
   )
