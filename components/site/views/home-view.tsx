@@ -314,6 +314,26 @@ export function HomeView() {
         </div>
       </section>
 
+      {/* อัลกุรอานทั้งเล่ม — แยกกล่อง รองลงจากเครื่องมือ */}
+      <section className="mx-auto max-w-xl px-3 pt-4 sm:px-4">
+        <button
+          type="button"
+          onClick={(e) => { tapFeedback(e); navigate('quran') }}
+          className="soft-card lift flex w-full items-center gap-4 overflow-hidden p-4 text-left sm:p-5"
+        >
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-royal-blue text-white shadow-md shadow-royal-blue/30 sm:size-16">
+            <BookOpen className="size-7 sm:size-8" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-base font-bold text-deep-blue sm:text-lg">อัลกุรอานทั้งเล่ม</span>
+            <span className="mt-0.5 block text-sm text-muted-foreground">
+              114 ซูเราะฮ์ · อาหรับ + คำแปลไทย
+            </span>
+          </span>
+          <ArrowRight className="size-5 shrink-0 text-royal-blue" />
+        </button>
+      </section>
+
       <section className="mx-auto max-w-7xl px-4 py-20">
         <SectionHeading
           eyebrow="บริการของเรา"
