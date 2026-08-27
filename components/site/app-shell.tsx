@@ -20,13 +20,17 @@ import { TasbihView } from '@/components/site/views/tasbih-view'
 import { HijriCalendarView } from '@/components/site/views/hijri-calendar-view'
 import { QuranView } from '@/components/site/views/quran-view'
 import { HotelsView } from '@/components/site/views/hotels-view'
+import { AlbumsView, AlbumDetailView } from '@/components/site/views/albums-view'
+import { GuidesHubView, GuideDetailView } from '@/components/site/views/guides-view'
 import { MobileBottomNav } from '@/components/site/mobile-bottom-nav'
 import { SplashScreen } from '@/components/site/splash-screen'
+import { ThemeProvider } from '@/components/site/theme-provider'
 
 export function AppShell() {
   const [view, setView] = useState<View>('home')
   const [articleId, setArticleId] = useState<string | null>(null)
   const [packageId, setPackageId] = useState<string | null>(null)
+  const [albumId, setAlbumId] = useState<string | null>(null)
   const [showSplash, setShowSplash] = useState(true)
 
   const navigate = useCallback((next: View, id?: string) => {
@@ -34,12 +38,19 @@ export function AppShell() {
     if (next === 'article') {
       setArticleId(id ?? null)
       setPackageId(null)
+      setAlbumId(null)
     } else if (next === 'package') {
       setPackageId(id ?? null)
       setArticleId(null)
+      setAlbumId(null)
+    } else if (next === 'album') {
+      setAlbumId(id ?? null)
+      setArticleId(null)
+      setPackageId(null)
     } else {
       setArticleId(null)
       setPackageId(null)
+      setAlbumId(null)
     }
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -47,9 +58,10 @@ export function AppShell() {
   }, [])
 
   return (
+    <ThemeProvider>
     <StoreProvider>
       <ToastProvider>
-        <NavContext.Provider value={{ view, articleId, packageId, navigate }}>
+        <NavContext.Provider value={{ view, articleId, packageId, albumId, navigate }}>
           {showSplash && (
             <SplashScreen durationMs={1600} onDone={() => setShowSplash(false)} />
           )}
@@ -74,6 +86,12 @@ export function AppShell() {
               {view === 'hijri-calendar' && <HijriCalendarView />}
               {view === 'quran' && <QuranView />}
               {view === 'hotels' && <HotelsView />}
+              {view === 'albums' && <AlbumsView />}
+              {view === 'album' && <AlbumDetailView />}
+              {view === 'guides' && <GuidesHubView />}
+              {(view === 'guide-hajj' || view === 'guide-umrah') && (
+                <GuideDetailView type={view === 'guide-hajj' ? 'hajj' : 'umrah'} />
+              )}
             </main>
             <Footer />
             <MobileBottomNav />
@@ -81,5 +99,6 @@ export function AppShell() {
         </NavContext.Provider>
       </ToastProvider>
     </StoreProvider>
+    </ThemeProvider>
   )
 }
