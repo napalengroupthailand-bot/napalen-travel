@@ -21,9 +21,9 @@ export function HomeView() {
   const ytId = settings.heroMode !== 'image' ? extractYoutubeId(settings.youtubeHeroUrl) : ''
   // สร้าง URL ตอน video เริ่มแล้วเท่านั้น (ฝั่ง client) เพื่อให้ origin + autoplay ถูกต้องบน iPhone
   const embedSrc =
-  ytId && videoStarted
-    ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
-    : ''
+    ytId && videoStarted
+      ? youtubeEmbedUrl(settings.youtubeHeroUrl, true, { controls: isMobile })
+      : ''
 
   // PC: เล่น YouTube ทันที (mute) | โหมดภาพ: โชว์รูป | มือถือ: รอเปิดเสียง
   useEffect(() => {
@@ -46,22 +46,39 @@ export function HomeView() {
     const t = setInterval(() => setSlide((s) => (s + 1) % gallery.length), 4500)
     return () => clearInterval(t)
   }, [gallery.length])
-  /** ต้องใส่ src ในจังหวะคลิกเดียวกัน — iOS ไม่อนุญาต autoplay หลัง re-render */
+  const ytCmd = (func: string, args: unknown[] = []) => {
+    try {
+      iframeRef.current?.contentWindow?.postMessage(
+        JSON.stringify({ event: 'command', func, args }),
+        '*',
+      )
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /** เริ่มเล่น — ใส่ src ใน gesture เดียวกัน (iOS) */
   const startVideoNow = (withSound: boolean) => {
-    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, !withSound, {
-      controls: true,
-    })
-    setMuted(!withSound)
+    // เริ่มแบบ mute ก่อน แล้วค่อย unMute ถ้าต้องการเสียง — กันรีโหลดตอนสลับเสียง
+    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, true, { controls: true })
     setVideoStarted(true)
-    // สำคัญ: ตั้ง src ทันทีใน user gesture (อย่ารอ React render)
+    setMuted(!withSound)
     const el = iframeRef.current
     if (el) {
       el.src = url
+      // รอ iframe พร้อมแล้วสั่งเล่น + เปิดเสียง
+      window.setTimeout(() => {
+        ytCmd('playVideo')
+        if (withSound) {
+          ytCmd('unMute')
+          setMuted(false)
+        }
+      }, 400)
     }
   }
 
   const handleStartVideo = () => {
-    startVideoNow(true)
+    startVideoNow(false) // กดไอคอนเล่น = เริ่มแบบปิดเสียงก่อน
   }
 
   const handleToggleMute = () => {
@@ -69,34 +86,27 @@ export function HomeView() {
       startVideoNow(true)
       return
     }
-    // สลับเสียงผ่านโหลด URL ใหม่ + postMessage
+    // สลับเสียงอย่างเดียว — ไม่เปลี่ยน src ไม่รีสตาร์ท
     const nextMuted = !muted
     setMuted(nextMuted)
-    const url = youtubeEmbedUrl(settings.youtubeHeroUrl, nextMuted, {
-      controls: isMobile,
-    })
-    const el = iframeRef.current
-    if (el) {
-      el.src = url
-      // ลองสั่ง play ซ้ำ
-      try {
-        el.contentWindow?.postMessage(
-          JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
-          '*',
-        )
-        el.contentWindow?.postMessage(
-          JSON.stringify({
-            event: 'command',
-            func: nextMuted ? 'mute' : 'unMute',
-            args: [],
-          }),
-          '*',
-        )
-      } catch {
-        /* ignore */
-      }
-    }
+    ytCmd(nextMuted ? 'mute' : 'unMute')
+    ytCmd('playVideo')
   }
+
+  // พยายามเล่นต่อเมื่อกลับมาที่แท็บ / หน้าเว็บ
+  useEffect(() => {
+    if (!videoStarted) return
+    const resume = () => {
+      ytCmd('playVideo')
+      if (!muted) ytCmd('unMute')
+    }
+    document.addEventListener('visibilitychange', resume)
+    window.addEventListener('focus', resume)
+    return () => {
+      document.removeEventListener('visibilitychange', resume)
+      window.removeEventListener('focus', resume)
+    }
+  }, [videoStarted, muted])
 
   return (
     <div>
@@ -138,23 +148,7 @@ export function HomeView() {
         )}
       </div>
 
-      {/* มือถือ: ยังไม่เล่น — กดแล้วเปิดเสียง + เล่นวิดีโอ */}
-      {ytId && isMobile && !videoStarted && (
-        <button
-          type="button"
-          onClick={handleStartVideo}
-          className="absolute left-1/2 top-[42%] z-20 flex flex-col items-center gap-2 -translate-x-1/2 -translate-y-1/2"
-          aria-label="เปิดเสียงและเล่นวิดีโอ"
-        >
-          <span className="flex size-16 items-center justify-center rounded-full bg-white/20 text-white shadow-2xl ring-2 ring-white/40 backdrop-blur transition active:scale-90">
-            <Volume2 className="size-7" />
-          </span>
-          <span className="rounded-full bg-black/55 px-3 py-1 text-[11px] font-medium text-white backdrop-blur">
-            เปิดเสียงเพื่อเล่นวิดีโอ
-          </span>
-        </button>
-      )}
-  <div className="absolute inset-0 bg-gradient-to-b from-deep-blue/80 via-deep-blue/70 to-deep-blue/90 pointer-events-none" />
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-deep-blue/45 via-deep-blue/35 to-deep-blue/55 sm:from-deep-blue/70 sm:via-deep-blue/55 sm:to-deep-blue/75" />
 
   {ytId && (videoStarted || isMobile) && (
     <button
@@ -172,6 +166,37 @@ export function HomeView() {
 
   {/* เนื้อหาเดิม ... */}
         <div className="relative z-10 mx-auto max-w-3xl px-3 pb-16 pt-16 text-center sm:px-4 sm:py-20">
+          {/* มือถือ: ไอคอนเล่นวิดีโอด้านบนบิสมิลละฮ์ */}
+          {ytId && isMobile && (
+            <button
+              type="button"
+              onClick={() => (videoStarted ? handleToggleMute() : handleStartVideo())}
+              className="hero-play-btn mb-5 inline-flex flex-col items-center gap-1.5"
+              aria-label={videoStarted ? (muted ? 'เปิดเสียง' : 'ปิดเสียง') : 'เล่นวิดีโอ'}
+            >
+              <span className="hero-play-ring relative flex size-[4.25rem] items-center justify-center rounded-full">
+                <span className="hero-play-glow absolute inset-0 rounded-full" />
+                <span className="relative flex size-14 items-center justify-center rounded-full border border-white/50 bg-white/20 text-white shadow-[0_0_28px_rgba(56,189,248,0.45)] backdrop-blur-md">
+                  {videoStarted && !muted ? (
+                    <Volume2 className="size-6" />
+                  ) : videoStarted && muted ? (
+                    <VolumeX className="size-6" />
+                  ) : (
+                    <svg viewBox="0 0 24 24" className="ml-0.5 size-7 fill-current">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </span>
+              </span>
+              {/* เส้นคลื่นเสียง */}
+              <span className="hero-eq flex h-4 items-end gap-0.5" aria-hidden>
+                <i /><i /><i /><i /><i />
+              </span>
+              <span className="text-[10px] font-medium text-white/90">
+                {videoStarted ? (muted ? 'เปิดเสียง' : 'กำลังเล่น') : 'เล่นวิดีโอ'}
+              </span>
+            </button>
+          )}
           <p className="animate-float-up font-arabic text-2xl text-luxury-gold sm:text-3xl">
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </p>
