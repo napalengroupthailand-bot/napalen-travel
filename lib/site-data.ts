@@ -93,14 +93,40 @@ export type Hotel = {
   city?: string
 }
 
+
+/** อัลบั้มภาพสถานที่ */
+export type PhotoAlbum = {
+  id: string
+  title: string
+  date: string
+  cover: string
+  images: string[]
+}
+
+/** ขั้นตอนพิธีฮัจญ์/อุมเราะห์ */
+export type GuideStep = {
+  id: string
+  type: 'hajj' | 'umrah'
+  title: string
+  content: string
+  images: string[]
+  order: number
+}
+
 export type SiteSettings = {
   /** YouTube video ID หรือ full URL สำหรับหน้าปก */
   youtubeHeroUrl: string
+  /** โหมดหน้าปก: วิดีโอ YouTube หรือรูปที่อัปโหลด */
+  heroMode: 'youtube' | 'image'
+  /** รูปหน้าปก (เมื่อ heroMode = image) — data URL หรือ path */
+  heroImage: string
   gallery: string[]
   testimonials: Testimonial[]
   staffContacts: StaffContact[]
   stats: SiteStats
   hotels: Hotel[]
+  photoAlbums: PhotoAlbum[]
+  guideSteps: GuideStep[]
 }
 
 export const STATUS_LABELS: Record<RegStatus, string> = {
@@ -128,7 +154,9 @@ export const defaultStats: SiteStats = {
 }
 
 export const defaultSettings: SiteSettings = {
-  youtubeHeroUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+  youtubeHeroUrl: '',
+  heroMode: 'image',
+  heroImage: '/images/hero-kaaba.png',
   gallery: [
     '/images/hero-kaaba.png',
     '/images/grand-mosque.png',
