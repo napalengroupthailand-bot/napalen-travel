@@ -107,6 +107,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               (sett?.data as SiteSettings)?.staffContacts ?? seed.settings.staffContacts,
             gallery: (sett?.data as SiteSettings)?.gallery ?? seed.settings.gallery,
             hotels: (sett?.data as SiteSettings)?.hotels ?? seed.settings.hotels,
+            photoAlbums:
+              (sett?.data as SiteSettings)?.photoAlbums ?? seed.settings.photoAlbums,
+            guideSteps:
+              (sett?.data as SiteSettings)?.guideSteps ?? seed.settings.guideSteps,
+            heroMode: (sett?.data as SiteSettings)?.heroMode ?? seed.settings.heroMode,
+            heroImage: (sett?.data as SiteSettings)?.heroImage ?? seed.settings.heroImage,
             stats: {
               ...seed.settings.stats,
               ...((sett?.data as SiteSettings)?.stats || {}),
