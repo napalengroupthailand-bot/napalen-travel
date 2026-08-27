@@ -815,3 +815,63 @@
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Hero play button + sound wave */
+.hero-play-glow {
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.55) 0%, transparent 70%);
+  animation: hero-glow-pulse 2s ease-in-out infinite;
+}
+@keyframes hero-glow-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(1.25); opacity: 0.95; }
+}
+.hero-play-ring::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  animation: hero-ring 2.2s ease-out infinite;
+}
+@keyframes hero-ring {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+.hero-eq i {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  animation: hero-eq 0.9s ease-in-out infinite;
+}
+.hero-eq i:nth-child(1) { height: 6px; animation-delay: 0s; }
+.hero-eq i:nth-child(2) { height: 12px; animation-delay: 0.12s; }
+.hero-eq i:nth-child(3) { height: 16px; animation-delay: 0.24s; }
+.hero-eq i:nth-child(4) { height: 10px; animation-delay: 0.36s; }
+.hero-eq i:nth-child(5) { height: 7px; animation-delay: 0.48s; }
+@keyframes hero-eq {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.7; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Dark mode: text on light cards stays dark readable */
+.dark .soft-card,
+.dark .bg-white,
+.dark .bg-white\/95,
+.dark [class*="bg-white"] {
+  color: #0a1628;
+}
+.dark .soft-card .text-deep-blue,
+.dark .soft-card h1,
+.dark .soft-card h2,
+.dark .soft-card h3,
+.dark .soft-card p,
+.dark .soft-card span {
+  color: #0a1628 !important;
+}
+.dark .soft-card .text-muted-foreground {
+  color: #5a6d85 !important;
+}
+.dark .soft-card .text-royal-blue {
+  color: #1a4db5 !important;
+}
