@@ -1,15 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { Menu, X, MessageCircle, Lock } from 'lucide-react'
+import { Menu, X, MessageCircle, Lock, Sun, Moon } from 'lucide-react'
 import { useStore } from './store'
 import { useNav, NAV_LINKS, type View } from './nav'
 import { COMPANY_LOGO } from '@/lib/site-data'
+import { useTheme } from './theme-provider'
 
 export function Navbar() {
   const { company } = useStore()
   const { view, navigate } = useNav()
   const [open, setOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   const go = (v: View) => {
     navigate(v)
@@ -66,6 +68,14 @@ export function Navbar() {
             <MessageCircle className="size-4" />
             แอดไลน์
           </a>
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex size-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-bright-sky transition hover:bg-white/20"
+            aria-label="สลับโหมดกลางวัน/กลางคืน"
+          >
+            {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
           <button
             onClick={() => go('admin')}
             className="flex items-center gap-1.5 rounded-full border border-luxury-gold/50 px-3 py-2 text-sm font-medium text-luxury-gold transition hover:bg-luxury-gold hover:text-deep-blue"
