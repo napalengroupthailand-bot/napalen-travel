@@ -729,3 +729,56 @@
   0% { background-position: 100% 0; }
   100% { background-position: -100% 0; }
 }
+
+/* global soft enter for all app pages */
+.app-page.page-enter,
+.page-enter {
+  animation: page-fade-soft 0.55s cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+@keyframes page-fade-soft {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+
+/* light sweep on pressable cards/buttons */
+.soft-card,
+.lift,
+.knowledge-block,
+.pressable {
+  position: relative;
+  overflow: hidden;
+}
+.soft-card::after,
+.lift::after,
+.pressable::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 65%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+  z-index: 2;
+}
+.soft-card:active::after,
+.lift:active::after,
+.pressable:active::after,
+.soft-card:hover::after,
+.lift:hover::after {
+  animation: card-shine 0.65s ease forwards;
+}
+@keyframes card-shine {
+  to { transform: translateX(120%); }
+}
