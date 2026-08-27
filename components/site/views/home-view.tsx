@@ -18,7 +18,7 @@ export function HomeView() {
   const [isMobile, setIsMobile] = useState(false)
   const [slide, setSlide] = useState(0)
   const gallery = settings.gallery.filter(Boolean)
-  const ytId = extractYoutubeId(settings.youtubeHeroUrl)
+  const ytId = settings.heroMode !== 'image' ? extractYoutubeId(settings.youtubeHeroUrl) : ''
   // สร้าง URL ตอน video เริ่มแล้วเท่านั้น (ฝั่ง client) เพื่อให้ origin + autoplay ถูกต้องบน iPhone
   const embedSrc =
   ytId && videoStarted
@@ -94,11 +94,6 @@ export function HomeView() {
       }
     }
   }
-  const stats = [
-    { icon: Heart, value: settings.stats.umrahCount, label: 'ผู้ไปอุมเราะห์' },
-    { icon: Award, value: settings.stats.hajjCount, label: 'ผู้ไปฮัจญ์' },
-    { icon: Users, value: settings.stats.totalCustomers, label: 'ผู้ใช้บริการทั้งหมด' },
-  ]
 
   return (
     <div>
@@ -108,7 +103,7 @@ export function HomeView() {
         {/* ภาพปก โชว์จนกว่าจะเริ่มวิดีโอ */}
         {!videoStarted && (
           <img
-            src={ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png'}
+            src={settings.heroMode === 'image' && settings.heroImage ? settings.heroImage : ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : settings.heroImage || '/images/hero-kaaba.png'}
             alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
             className="absolute inset-0 z-[1] size-full object-cover"
             onError={(e) => {
@@ -206,22 +201,59 @@ export function HomeView() {
       </section>
 
 
-      <section className="relative z-10 -mt-10 px-4 pt-2 sm:-mt-12">
-        <div className="mx-auto grid max-w-4xl gap-1.5 rounded-2xl border border-border/60 bg-white/95 p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:grid-cols-3 sm:gap-4 sm:rounded-[1.5rem] sm:p-6 animate-slide-up">
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="flex flex-col items-center gap-0.5 rounded-xl bg-soft-mint/60 py-2 text-center sm:gap-1.5 sm:rounded-2xl sm:py-3"
-            >
-              <div className="flex size-8 items-center justify-center rounded-full bg-royal-blue/10 sm:size-11">
-                <s.icon className="size-4 text-royal-blue sm:size-5" />
-              </div>
-              <p className="text-base font-bold text-deep-blue sm:text-3xl">{s.value}</p>
-              <p className="text-[10px] font-medium text-muted-foreground sm:text-sm">{s.label}</p>
+      {/* แกลเลอรีแทนแดชบอร์ด — มือถือ 1 ภาพ / PC 3 ภาพ เลื่อนอัตโนมัติ */}
+      {gallery.length > 0 && (
+        <section className="relative z-10 -mt-8 px-4 pt-2 sm:-mt-10">
+          <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/60 bg-white/95 p-2 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:rounded-[1.5rem] sm:p-3 animate-slide-up">
+            {/* มือถือ: 1 ภาพ */}
+            <div className="relative aspect-[16/10] overflow-hidden rounded-xl sm:hidden">
+              {gallery.map((src, i) => (
+                <img
+                  key={`m-${i}`}
+                  src={src}
+                  alt=""
+                  className={`absolute inset-0 size-full object-cover transition-opacity duration-700 ${
+                    i === slide % gallery.length ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+            {/* PC: 3 ภาพ */}
+            <div className="hidden gap-2 sm:grid sm:grid-cols-3">
+              {[0, 1, 2].map((offset) => {
+                const i = gallery.length ? (slide + offset) % gallery.length : 0
+                const src = gallery[i]
+                return (
+                  <div key={offset} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                    {src && (
+                      <img
+                        src={src}
+                        alt=""
+                        className="size-full object-cover transition duration-700"
+                      />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+            {gallery.length > 1 && (
+              <div className="mt-2 flex justify-center gap-1.5">
+                {gallery.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setSlide(i)}
+                    className={`h-1.5 rounded-full transition-all ${
+                      i === slide % gallery.length ? 'w-5 bg-royal-blue' : 'w-1.5 bg-royal-blue/25'
+                    }`}
+                    aria-label={`สไลด์ ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* เครื่องมือ — ไอคอนใหญ่ สีดำเรียบ */}
       <section className="mx-auto max-w-lg px-3 pt-6 sm:px-4">
@@ -273,7 +305,11 @@ export function HomeView() {
           ].map((s) => (
             <article
               key={s.title}
-              className="group relative overflow-hidden rounded-[1.5rem] shadow-[0_8px_32px_rgba(10,22,40,0.12)] lift"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(s.go)}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(s.go) }}
+              className="group relative cursor-pointer overflow-hidden rounded-[1.5rem] shadow-[0_8px_32px_rgba(10,22,40,0.12)] lift"
             >
               <img
                 src={s.img || '/placeholder.svg'}
@@ -284,20 +320,67 @@ export function HomeView() {
               <div className="absolute inset-x-0 bottom-0 p-7">
                 <h3 className="text-2xl font-bold text-bright-sky">{s.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-bright-sky/85">{s.desc}</p>
-                <button
-                  onClick={() => navigate(s.go)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-luxury-gold px-5 py-2.5 text-sm font-semibold text-deep-blue transition hover:brightness-110 active:scale-95"
+                <span
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-luxury-gold px-5 py-2.5 text-sm font-semibold text-deep-blue transition group-hover:brightness-110"
                 >
                   ดูรายละเอียด
                   <ArrowRight className="size-4" />
-                </button>
+                </span>
               </div>
             </article>
           ))}
         </div>
       </section>
 
-      {gallery.length > 0 && (
+      {/* อัลบั้มภาพ — รองจากบริการ */}
+      {(settings.photoAlbums?.length ?? 0) > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-16">
+          <SectionHeading eyebrow="ภาพต่างๆ" title="อัลบั้มจากสถานที่ศักดิ์สิทธิ์" />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {settings.photoAlbums.slice(0, 6).map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                onClick={() => navigate('album', a.id)}
+                className="soft-card lift overflow-hidden text-left"
+              >
+                <img src={a.cover || a.images[0]} alt={a.title} className="aspect-[4/3] w-full object-cover" />
+                <div className="p-3">
+                  <p className="font-bold text-deep-blue">{a.title}</p>
+                  <p className="text-xs text-muted-foreground">{a.date}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-6 text-center">
+            <button
+              type="button"
+              onClick={() => navigate('albums')}
+              className="inline-flex items-center gap-2 rounded-full bg-royal-blue px-5 py-2.5 text-sm font-semibold text-white"
+            >
+              ดูอัลบั้มทั้งหมด
+              <ArrowRight className="size-4" />
+            </button>
+          </div>
+        </section>
+      )}
+
+      {/* วิธีการทำฮัจญ์/อุมเราะห์ */}
+      <section className="mx-auto max-w-7xl px-4 pb-8">
+        <SectionHeading eyebrow="คลังข้อมูล" title="วิธีการทำฮัจญ์และอุมเราะห์" />
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          <button type="button" onClick={() => navigate('guide-hajj')} className="soft-card lift p-6 text-left">
+            <p className="text-lg font-bold text-deep-blue">ขั้นตอนฮัจญ์</p>
+            <p className="mt-1 text-sm text-muted-foreground">รายละเอียดพิธีทีละขั้น พร้อมภาพประกอบ</p>
+          </button>
+          <button type="button" onClick={() => navigate('guide-umrah')} className="soft-card lift p-6 text-left">
+            <p className="text-lg font-bold text-deep-blue">ขั้นตอนอุมเราะห์</p>
+            <p className="mt-1 text-sm text-muted-foreground">รายละเอียดพิธีทีละขั้น พร้อมภาพประกอบ</p>
+          </button>
+        </div>
+      </section>
+
+      {false && gallery.length > 0 && (
         <section className="bg-deep-blue px-4 py-16">
           <div className="mx-auto max-w-5xl">
             <SectionHeading eyebrow="แกลเลอรี" title="ภาพจากเส้นทางศรัทธา" light />
