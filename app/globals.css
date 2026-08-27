@@ -880,3 +880,91 @@
 .hero-media-dim {
   filter: brightness(0.88);
 }
+
+/* Quran book (paper) */
+.quran-book-shell {
+  perspective: 1200px;
+  padding: 0.25rem;
+}
+.quran-book-page {
+  position: relative;
+  border-radius: 4px 12px 12px 4px;
+  background: linear-gradient(135deg, #f7f0e0 0%, #f3e6c8 45%, #efe0bc 100%);
+  box-shadow:
+    0 12px 36px rgba(60, 40, 10, 0.18),
+    inset 0 0 0 1px rgba(196, 165, 116, 0.35);
+  transform-origin: left center;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+.quran-book-page.flip-next {
+  transform: rotateY(-12deg) scale(0.98);
+  opacity: 0.75;
+}
+.quran-book-page.flip-prev {
+  transform: rotateY(12deg) scale(0.98);
+  opacity: 0.75;
+}
+.quran-book-inner {
+  position: relative;
+  min-height: 420px;
+  padding: 1.35rem 1.5rem 1.75rem;
+  background-image:
+    linear-gradient(90deg, rgba(120, 80, 30, 0.06) 0%, transparent 8%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      rgba(180, 150, 100, 0.08) 28px
+    );
+}
+.quran-book-spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  background: linear-gradient(90deg, rgba(80, 50, 20, 0.12), transparent);
+  pointer-events: none;
+}
+
+
+/* Mushaf real-page layout */
+.quran-mushaf {
+  transform-origin: left center;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+.quran-mushaf.flip-next {
+  transform: rotateY(-10deg) scale(0.985);
+  opacity: 0.8;
+}
+.quran-mushaf.flip-prev {
+  transform: rotateY(10deg) scale(0.985);
+  opacity: 0.8;
+}
+.quran-mushaf-frame {
+  border-radius: 6px;
+  padding: 10px;
+  background:
+    linear-gradient(145deg, #e8d5a8, #d4bc88 40%, #c9a96a);
+  box-shadow:
+    0 14px 40px rgba(60, 40, 10, 0.22),
+    inset 0 0 0 2px rgba(120, 90, 40, 0.35);
+}
+.quran-mushaf-inner {
+  min-height: 520px;
+  border-radius: 4px;
+  border: 2px solid rgba(140, 110, 50, 0.45);
+  background:
+    linear-gradient(180deg, #fbf6ea 0%, #f7efdc 50%, #f3e8d0 100%);
+  padding: 1.25rem 1.15rem 1.5rem;
+  box-shadow: inset 0 0 0 6px rgba(196, 165, 116, 0.25);
+}
+.quran-ayah-num {
+  font-size: 0.72em;
+  color: #6b4f2e;
+  padding: 0 0.15em;
+  white-space: nowrap;
+}
+.quran-ayah-inline {
+  /* continuous flow like printed mushaf */
+}
