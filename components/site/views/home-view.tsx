@@ -314,8 +314,8 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* อัลกุรอานทั้งเล่ม — แยกกล่อง รองลงจากเครื่องมือ */}
-      <section className="mx-auto max-w-xl px-3 pt-4 sm:px-4">
+      {/* อัลกุรอานทั้งเล่ม + แบบหนังสือ */}
+      <section className="mx-auto max-w-xl space-y-3 px-3 pt-4 sm:px-4">
         <button
           type="button"
           onClick={(e) => { tapFeedback(e); navigate('quran') }}
@@ -331,6 +331,22 @@ export function HomeView() {
             </span>
           </span>
           <ArrowRight className="size-5 shrink-0 text-royal-blue" />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => { tapFeedback(e); navigate('quran-book') }}
+          className="soft-card lift flex w-full items-center gap-4 overflow-hidden p-4 text-left sm:p-5"
+        >
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[#6b4f2e] text-[#f5e6c8] shadow-md sm:size-16">
+            <BookOpen className="size-7 sm:size-8" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-base font-bold text-deep-blue sm:text-lg">อัลกุรอาน · แบบหนังสือ</span>
+            <span className="mt-0.5 block text-sm text-muted-foreground">
+              เปิดเหมือนหน้ากระดาษ · พลิกทีละหน้า
+            </span>
+          </span>
+          <ArrowRight className="size-5 shrink-0 text-[#6b4f2e]" />
         </button>
       </section>
 
