@@ -19,6 +19,7 @@ import { QiblaView } from '@/components/site/views/qibla-view'
 import { TasbihView } from '@/components/site/views/tasbih-view'
 import { HijriCalendarView } from '@/components/site/views/hijri-calendar-view'
 import { QuranView } from '@/components/site/views/quran-view'
+import { QuranBookView } from '@/components/site/views/quran-book-view'
 import { HotelsView } from '@/components/site/views/hotels-view'
 import { AlbumsView, AlbumDetailView } from '@/components/site/views/albums-view'
 import { GuidesHubView, GuideDetailView } from '@/components/site/views/guides-view'
@@ -93,6 +94,7 @@ export function AppShell() {
               {view === 'tasbih' && <TasbihView />}
               {view === 'hijri-calendar' && <HijriCalendarView />}
               {view === 'quran' && <QuranView />}
+              {view === 'quran-book' && <QuranBookView />}
               {view === 'hotels' && <HotelsView />}
               {view === 'albums' && <AlbumsView />}
               {view === 'album' && <AlbumDetailView />}
