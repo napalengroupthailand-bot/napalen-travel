@@ -8,7 +8,7 @@ const ITEMS: { view: View; label: string; icon: typeof Home }[] = [
   { view: 'home', label: 'หน้าแรก', icon: Home },
   { view: 'hajj', label: 'ฮัจญ์', icon: Landmark },
   { view: 'umrah', label: 'อุมเราะห์', icon: Plane },
-  { view: 'knowledge', label: 'ความรู้', icon: BookOpen },
+  { view: 'knowledge', label: 'ข้อมูล', icon: BookOpen },
   { view: 'contact', label: 'ติดต่อ', icon: Phone },
 ]
 
@@ -41,8 +41,8 @@ export function MobileBottomNav() {
                 }`}
               >
                 <item.icon
-                  className={`size-6 transition-transform duration-200 ${
-                    isActive ? 'stroke-[2.4] scale-110' : 'stroke-[1.75]'
+                  className={`icon-depth size-6 transition-transform duration-200 ${
+                    isActive ? 'stroke-[2.4] scale-110 icon-depth-active' : 'stroke-[1.75]'
                   }`}
                 />
                 <span
