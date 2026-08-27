@@ -63,6 +63,45 @@
   --radius: 1.25rem;
 }
 
+
+
+/* ===== Dark mode (กลางคืน) ===== */
+.dark {
+  color-scheme: dark;
+  --background: #0a1628;
+  --foreground: #e8eef8;
+  --card: #122038;
+  --card-foreground: #e8eef8;
+  --popover: #122038;
+  --popover-foreground: #e8eef8;
+  --primary: #3b82f6;
+  --primary-foreground: #f0f5fb;
+  --secondary: #1a2d4a;
+  --secondary-foreground: #e8eef8;
+  --muted: #1a2d4a;
+  --muted-foreground: #9aadc8;
+  --accent: #d4af37;
+  --accent-foreground: #0a1628;
+  --border: #243b5c;
+  --input: #243b5c;
+  --ring: #3b82f6;
+}
+.dark body,
+.dark .noise-overlay {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(56, 189, 248, 0.12), transparent 55%),
+    linear-gradient(180deg, #0a1628 0%, #0f1e36 100%) !important;
+}
+.dark .soft-card {
+  background: rgba(18, 32, 56, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.dark .text-deep-blue {
+  color: #e8eef8 !important;
+}
+.dark .text-muted-foreground {
+  color: #9aadc8 !important;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
