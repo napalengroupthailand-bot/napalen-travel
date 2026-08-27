@@ -69,8 +69,16 @@ export function AppShell() {
             <TopBar />
             <Navbar />
             <CalendarRibbon />
-            <main className="flex-1 pb-28 lg:pb-0" key={view}>
-              <div style={{ display: view === 'home' ? 'block' : 'none' }}>
+            <main className="flex-1 pb-28 lg:pb-0">
+              {/* หน้าแรก mount ค้างไว้เสมอ — วิดีโอหน้าปกไม่ถูกทำลายตอนเปลี่ยนหน้า */}
+              <div
+                className={
+                  view === 'home'
+                    ? 'relative z-0 block'
+                    : 'pointer-events-none fixed inset-0 -z-10 overflow-hidden opacity-0'
+                }
+                aria-hidden={view !== 'home'}
+              >
                 <HomeView />
               </div>
 
