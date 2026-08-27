@@ -15,6 +15,7 @@ export type View =
   | 'tasbih'
   | 'hijri-calendar'
   | 'quran'
+  | 'quran-book'
   | 'hotels'
   | 'albums'
   | 'album'
