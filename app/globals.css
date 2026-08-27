@@ -875,3 +875,8 @@
 .dark .soft-card .text-royal-blue {
   color: #1a4db5 !important;
 }
+
+/* หน้าปกมืดนิด ๆ */
+.hero-media-dim {
+  filter: brightness(0.88);
+}
