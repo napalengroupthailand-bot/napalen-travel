@@ -353,7 +353,7 @@ function YoutubeTab() {
         </button>
       </div>
       {mode === 'image' ? (
-        <ImageUpload value={heroImage} onChange={setHeroImage} label="ภาพหน้าปก" />
+        <ImageUpload value={heroImage} onChange={setHeroImage} label="ภาพหน้าปก" original />
       ) : (
         <input
           className={inputCls}
