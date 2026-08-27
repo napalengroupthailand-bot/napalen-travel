@@ -678,3 +678,54 @@
   0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
   50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.12); }
 }
+
+/* knowledge blue blocks */
+.knowledge-block {
+  animation: knowledge-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes knowledge-in {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+    filter: blur(0);
+  }
+}
+.knowledge-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: none;
+}
+.knowledge-block:hover .knowledge-sweep::after {
+  animation: knowledge-shine 0.7s ease forwards;
+}
+@keyframes knowledge-shine {
+  to { transform: translateX(100%); }
+}
+
+.light-sweep-slow {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 45%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: sweep-pan 4.5s ease-in-out infinite;
+}
+@keyframes sweep-pan {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
