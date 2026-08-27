@@ -43,16 +43,24 @@ type SingleProps = {
   onChange: (url: string) => void
   label?: string
   className?: string
+  /** true = เก็บต้นฉบับไม่บีบอัด (เหมาะภาพหน้าปก) */
+  original?: boolean
 }
 
-export function ImageUpload({ value, onChange, label = 'อัปโหลดรูปภาพ', className }: SingleProps) {
+export function ImageUpload({
+  value,
+  onChange,
+  label = 'อัปโหลดรูปภาพ',
+  className,
+  original = false,
+}: SingleProps) {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handle = async (files: FileList | null) => {
     const file = files?.[0]
     if (!file || !file.type.startsWith('image/')) return
     try {
-      const url = await compressImage(file)
+      const url = original ? await readFileAsDataUrl(file) : await compressImage(file)
       onChange(url)
     } catch {
       /* ignore */
@@ -89,7 +97,7 @@ export function ImageUpload({ value, onChange, label = 'อัปโหลดร
             <Upload className="size-3.5" />
             เลือกไฟล์รูป
           </button>
-          <p className="text-[10px] text-muted-foreground">JPG, PNG, WebP — บีบอัดอัตโนมัติ</p>
+          <p className="text-[10px] text-muted-foreground">{original ? 'JPG, PNG, WebP — เก็บต้นฉบับ (ไม่บีบอัด)' : 'JPG, PNG, WebP — บีบอัดอัตโนมัติ'}</p>
         </div>
         <input
           ref={inputRef}
