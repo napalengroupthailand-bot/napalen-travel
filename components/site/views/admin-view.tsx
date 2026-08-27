@@ -45,6 +45,8 @@ type Tab =
   | 'staff'
   | 'stats'
   | 'hotels'
+  | 'albums'
+  | 'guides'
 
 const STATUS_STYLES: Record<RegStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
@@ -156,14 +158,16 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
   { id: 'registrations', label: 'การลงทะเบียน', icon: Users },
   { id: 'stats', label: 'สถิติแดชบอร์ด', icon: BarChart3 },
-  { id: 'youtube', label: 'วิดีโอหน้าปก', icon: Video },
+  { id: 'youtube', label: 'หน้าปก (ภาพ/วิดีโอ)', icon: Video },
   { id: 'gallery', label: 'แกลเลอรี / สไลด์', icon: ImageIcon },
   { id: 'packages', label: 'แพ็กเกจ', icon: PackageIcon },
-  { id: 'articles', label: 'คลังความรู้', icon: BookOpen },
+  { id: 'articles', label: 'บทความ', icon: BookOpen },
   { id: 'testimonials', label: 'ความประทับใจ', icon: MessageCircle },
   { id: 'staff', label: 'เบอร์ติดต่อ', icon: Phone },
   { id: 'company', label: 'ข้อมูลบริษัท', icon: Building2 },
   { id: 'hotels', label: 'โรงแรม / นำทาง', icon: HotelIcon },
+  { id: 'albums', label: 'อัลบั้มภาพ', icon: ImageIcon },
+  { id: 'guides', label: 'ขั้นตอนพิธี', icon: BookOpen },
 ]
 
 function AdminDashboard({ onLogout }: { onLogout: () => void }) {
@@ -212,6 +216,8 @@ function AdminDashboard({ onLogout }: { onLogout: () => void }) {
       {tab === 'staff' && <StaffTab />}
       {tab === 'company' && <CompanyTab />}
       {tab === 'hotels' && <HotelsTab />}
+      {tab === 'albums' && <AlbumsAdminTab />}
+      {tab === 'guides' && <GuidesAdminTab />}
     </div>
   )
 }
@@ -321,30 +327,54 @@ function StatsTab() {
 function YoutubeTab() {
   const { settings, updateSettings } = useStore()
   const { notify } = useToast()
+  const [mode, setMode] = useState<'youtube' | 'image'>(settings.heroMode || 'image')
   const [url, setUrl] = useState(settings.youtubeHeroUrl)
+  const [heroImage, setHeroImage] = useState(settings.heroImage || '')
   const inputCls =
     'w-full rounded-lg border border-input bg-background px-4 py-2.5 text-sm text-foreground outline-none transition focus:border-royal-blue focus:ring-2 focus:ring-royal-blue/30'
 
   return (
-    <div className="max-w-xl rounded-2xl border border-luxury-gold/30 bg-card p-6 shadow-lg">
-      <h2 className="mb-2 text-lg font-semibold text-deep-blue">วิดีโอ YouTube หน้าปก</h2>
-      <p className="mb-4 text-sm text-muted-foreground">
-        วางลิงก์ YouTube หรือ Video ID — วิดีโอจะเล่นวนอัตโนมัติบนหน้าแรก มีปุ่มเปิด/ปิดเสียง
-      </p>
-      <input
-        className={inputCls}
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="https://www.youtube.com/watch?v=xxxxx หรือ Video ID"
-      />
+    <div className="max-w-xl space-y-4 rounded-2xl border border-luxury-gold/30 bg-card p-6 shadow-lg">
+      <h2 className="text-lg font-semibold text-deep-blue">หน้าปก (วิดีโอ / ภาพ)</h2>
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => setMode('image')}
+          className={`rounded-full px-4 py-2 text-sm font-semibold ${mode === 'image' ? 'bg-royal-blue text-white' : 'bg-muted text-muted-foreground'}`}
+        >
+          อัปโหลดภาพ
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('youtube')}
+          className={`rounded-full px-4 py-2 text-sm font-semibold ${mode === 'youtube' ? 'bg-royal-blue text-white' : 'bg-muted text-muted-foreground'}`}
+        >
+          YouTube
+        </button>
+      </div>
+      {mode === 'image' ? (
+        <ImageUpload value={heroImage} onChange={setHeroImage} label="ภาพหน้าปก" />
+      ) : (
+        <input
+          className={inputCls}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://www.youtube.com/watch?v=xxxxx"
+        />
+      )}
       <button
+        type="button"
         onClick={() => {
-          updateSettings({ youtubeHeroUrl: url.trim() })
-          notify('บันทึกลิงก์ YouTube เรียบร้อย')
+          updateSettings({
+            heroMode: mode,
+            youtubeHeroUrl: url.trim(),
+            heroImage,
+          })
+          notify('บันทึกหน้าปกเรียบร้อย')
         }}
-        className="mt-4 rounded-lg bg-royal-blue px-6 py-3 font-semibold text-bright-sky transition hover:bg-deep-blue"
+        className="rounded-lg bg-royal-blue px-6 py-3 font-semibold text-bright-sky transition hover:bg-deep-blue"
       >
-        บันทึกลิงก์
+        บันทึก
       </button>
     </div>
   )
@@ -896,6 +926,228 @@ function HotelsTab() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function AlbumsAdminTab() {
+  const { settings, updateSettings } = useStore()
+  const { notify } = useToast()
+  const albums = settings.photoAlbums || []
+  const [editing, setEditing] = useState<(typeof albums)[0] | null>(null)
+
+  const blank = () => ({
+    id: `alb-${Date.now()}`,
+    title: '',
+    date: new Date().toLocaleDateString('th-TH'),
+    cover: '',
+    images: [] as string[],
+  })
+
+  const save = (a: (typeof albums)[0]) => {
+    const list = albums.some((x) => x.id === a.id)
+      ? albums.map((x) => (x.id === a.id ? a : x))
+      : [...albums, a]
+    updateSettings({ photoAlbums: list })
+    setEditing(null)
+    notify('บันทึกอัลบั้มแล้ว')
+  }
+
+  const remove = (id: string) => {
+    updateSettings({ photoAlbums: albums.filter((x) => x.id !== id) })
+    notify('ลบอัลบั้มแล้ว')
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-deep-blue">อัลบั้มภาพ</h2>
+        <button
+          type="button"
+          onClick={() => setEditing(blank())}
+          className="rounded-lg bg-royal-blue px-4 py-2 text-sm font-semibold text-white"
+        >
+          + เพิ่มอัลบั้ม
+        </button>
+      </div>
+      {editing && (
+        <div className="max-w-xl space-y-3 rounded-2xl border border-border bg-card p-4">
+          <input
+            className="w-full rounded-lg border border-input px-3 py-2 text-sm"
+            placeholder="ชื่อสถานที่"
+            value={editing.title}
+            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+          />
+          <input
+            className="w-full rounded-lg border border-input px-3 py-2 text-sm"
+            placeholder="วันที่"
+            value={editing.date}
+            onChange={(e) => setEditing({ ...editing, date: e.target.value })}
+          />
+          <ImageUpload
+            label="ภาพปกอัลบั้ม"
+            value={editing.cover}
+            onChange={(cover) => setEditing({ ...editing, cover })}
+          />
+          <MultiImageUpload
+            label="ภาพในอัลบั้ม"
+            values={editing.images}
+            onChange={(images) =>
+              setEditing({
+                ...editing,
+                images,
+                cover: editing.cover || images[0] || '',
+              })
+            }
+            max={40}
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => save(editing)}
+              className="rounded-lg bg-royal-blue px-4 py-2 text-sm font-semibold text-white"
+            >
+              บันทึก
+            </button>
+            <button type="button" onClick={() => setEditing(null)} className="rounded-lg border px-4 py-2 text-sm">
+              ยกเลิก
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {albums.map((a) => (
+          <div key={a.id} className="flex gap-3 rounded-xl border border-border bg-card p-3">
+            <img src={a.cover || a.images[0]} alt="" className="size-16 rounded-lg object-cover" />
+            <div className="flex-1">
+              <p className="font-semibold text-deep-blue">{a.title}</p>
+              <p className="text-xs text-muted-foreground">{a.date} · {a.images.length} ภาพ</p>
+              <div className="mt-1 flex gap-2 text-xs">
+                <button type="button" className="text-royal-blue" onClick={() => setEditing(a)}>
+                  แก้ไข
+                </button>
+                <button type="button" className="text-destructive" onClick={() => remove(a.id)}>
+                  ลบ
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function GuidesAdminTab() {
+  const { settings, updateSettings } = useStore()
+  const { notify } = useToast()
+  const steps = settings.guideSteps || []
+  const [editing, setEditing] = useState<(typeof steps)[0] | null>(null)
+
+  const blank = (type: 'hajj' | 'umrah') => ({
+    id: `g-${Date.now()}`,
+    type,
+    title: '',
+    content: '',
+    images: [] as string[],
+    order: steps.filter((s) => s.type === type).length + 1,
+  })
+
+  const save = (s: (typeof steps)[0]) => {
+    const list = steps.some((x) => x.id === s.id)
+      ? steps.map((x) => (x.id === s.id ? s : x))
+      : [...steps, s]
+    updateSettings({ guideSteps: list })
+    setEditing(null)
+    notify('บันทึกขั้นตอนแล้ว')
+  }
+
+  const remove = (id: string) => {
+    updateSettings({ guideSteps: steps.filter((x) => x.id !== id) })
+    notify('ลบขั้นตอนแล้ว')
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold text-deep-blue">ขั้นตอนฮัจญ์ / อุมเราะห์</h2>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setEditing(blank('hajj'))}
+            className="rounded-lg bg-royal-blue px-3 py-2 text-sm font-semibold text-white"
+          >
+            + ฮัจญ์
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(blank('umrah'))}
+            className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white"
+          >
+            + อุมเราะห์
+          </button>
+        </div>
+      </div>
+      {editing && (
+        <div className="max-w-xl space-y-3 rounded-2xl border border-border bg-card p-4">
+          <p className="text-xs font-semibold text-royal-blue">
+            {editing.type === 'hajj' ? 'ฮัจญ์' : 'อุมเราะห์'} · ลำดับ {editing.order}
+          </p>
+          <input
+            className="w-full rounded-lg border border-input px-3 py-2 text-sm"
+            placeholder="ชื่อขั้นตอน"
+            value={editing.title}
+            onChange={(e) => setEditing({ ...editing, title: e.target.value })}
+          />
+          <textarea
+            className="min-h-[100px] w-full rounded-lg border border-input px-3 py-2 text-sm"
+            placeholder="รายละเอียด"
+            value={editing.content}
+            onChange={(e) => setEditing({ ...editing, content: e.target.value })}
+          />
+          <MultiImageUpload
+            label="ภาพประกอบ"
+            values={editing.images}
+            onChange={(images) => setEditing({ ...editing, images })}
+            max={12}
+          />
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => save(editing)}
+              className="rounded-lg bg-royal-blue px-4 py-2 text-sm font-semibold text-white"
+            >
+              บันทึก
+            </button>
+            <button type="button" onClick={() => setEditing(null)} className="rounded-lg border px-4 py-2 text-sm">
+              ยกเลิก
+            </button>
+          </div>
+        </div>
+      )}
+      <div className="space-y-2">
+        {steps
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((s) => (
+            <div key={s.id} className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3">
+              <div>
+                <span className="mr-2 rounded-full bg-royal-blue/10 px-2 py-0.5 text-[10px] font-bold text-royal-blue">
+                  {s.type === 'hajj' ? 'ฮัจญ์' : 'อุมเราะห์'} #{s.order}
+                </span>
+                <span className="font-semibold text-deep-blue">{s.title}</span>
+              </div>
+              <div className="flex gap-2 text-xs">
+                <button type="button" className="text-royal-blue" onClick={() => setEditing(s)}>
+                  แก้ไข
+                </button>
+                <button type="button" className="text-destructive" onClick={() => remove(s.id)}>
+                  ลบ
+                </button>
+              </div>
+            </div>
+          ))}
+      </div>
     </div>
   )
 }
