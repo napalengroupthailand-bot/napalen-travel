@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { uploadImageToStorage } from '@/lib/upload-image'
 import { Upload, X, ImageIcon } from 'lucide-react'
 
 /** อ่านไฟล์เป็น data URL (base64) — เก็บใน localStorage ได้ */
@@ -60,6 +61,15 @@ export function ImageUpload({
     const file = files?.[0]
     if (!file || !file.type.startsWith('image/')) return
     try {
+      // 1) พยายามอัปขึ้น Supabase Storage ก่อน (ต้นฉบับ)
+      try {
+        const publicUrl = await uploadImageToStorage(file, original ? 'hero' : 'general')
+        onChange(publicUrl)
+        return
+      } catch {
+        /* ยังไม่มี bucket หรือ policy — fallback */
+      }
+      // 2) fallback: เก็บใน JSON (บีบอัด ยกเว้น original)
       const url = original ? await readFileAsDataUrl(file) : await compressImage(file)
       onChange(url)
     } catch {
@@ -97,7 +107,9 @@ export function ImageUpload({
             <Upload className="size-3.5" />
             เลือกไฟล์รูป
           </button>
-          <p className="text-[10px] text-muted-foreground">{original ? 'JPG, PNG, WebP — เก็บต้นฉบับ (ไม่บีบอัด)' : 'JPG, PNG, WebP — บีบอัดอัตโนมัติ'}</p>
+          <p className="text-[10px] text-muted-foreground">{original
+            ? 'JPG, PNG, WebP — อัปขึ้น Storage (ต้นฉบับ) ถ้าไม่ได้จะเก็บในฐานข้อมูล'
+            : 'JPG, PNG, WebP — อัปขึ้น Storage ก่อน ถ้าไม่ได้จะบีบอัดเก็บในฐานข้อมูล'}</p>
         </div>
         <input
           ref={inputRef}
@@ -131,7 +143,11 @@ export function MultiImageUpload({ values, onChange, label = 'อัปโหล
     const urls: string[] = []
     for (const f of list) {
       try {
-        urls.push(await compressImage(f))
+        try {
+          urls.push(await uploadImageToStorage(f, 'gallery'))
+        } catch {
+          urls.push(await compressImage(f))
+        }
       } catch {
         /* skip */
       }
