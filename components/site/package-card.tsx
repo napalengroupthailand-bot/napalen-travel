@@ -23,7 +23,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-deep-blue/70 to-transparent" />
         {pkg.featured && (
-          <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-luxury-gold px-3 py-1 text-xs font-bold text-deep-blue shadow">
+          <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-royal-blue px-3 py-1 text-xs font-bold text-white shadow">
             <Star className="size-3.5 fill-deep-blue" />
             แนะนำ
           </span>
