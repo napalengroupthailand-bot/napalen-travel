@@ -120,7 +120,7 @@ export function HomeView() {
               (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png')
             }
             alt="หน้าปก"
-            className="absolute inset-0 z-[1] size-full object-cover"
+            className="hero-media-dim absolute inset-0 z-[1] size-full object-cover"
             onError={(e) => {
               ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
             }}
@@ -142,13 +142,14 @@ export function HomeView() {
               minHeight: '100%',
               minWidth: '177.78vh',
               transform: 'translate(-50%, -50%)',
-              opacity: videoStarted && settings.heroMode !== 'image' ? 1 : 0,
+              opacity: videoStarted && settings.heroMode !== 'image' ? 0.92 : 0,
             }}
           />
         )}
       </div>
 
-  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-deep-blue/45 via-deep-blue/35 to-deep-blue/55 sm:from-deep-blue/70 sm:via-deep-blue/55 sm:to-deep-blue/75" />
+  {/* เฟดมืดนิด ๆ ให้อักษรอ่านชัด ไม่บังภาพมาก */}
+  <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-deep-blue/55 via-deep-blue/45 to-deep-blue/65 sm:from-deep-blue/65 sm:via-deep-blue/50 sm:to-deep-blue/70" />
 
   {ytId && (videoStarted || isMobile) && (
     <button
