@@ -25,7 +25,7 @@ export function HomeView() {
     ? youtubeEmbedUrl(settings.youtubeHeroUrl, muted, { controls: isMobile })
     : ''
 
-  // PC: เล่นทันที (mute) | มือถือ: โชว์ภาพปก จนกดปุ่มเปิดเสียง/เล่น
+  // PC: เล่น YouTube ทันที (mute) | โหมดภาพ: โชว์รูป | มือถือ: รอเปิดเสียง
   useEffect(() => {
     const mobile =
       typeof window !== 'undefined' &&
@@ -33,10 +33,13 @@ export function HomeView() {
         (window.matchMedia && window.matchMedia('(max-width: 768px)').matches))
     setIsMobile(!!mobile)
     setMuted(true)
-    if (!mobile) {
+    const isYoutube = settings.heroMode !== 'image' && !!extractYoutubeId(settings.youtubeHeroUrl)
+    if (!mobile && isYoutube) {
       setVideoStarted(true)
+    } else {
+      setVideoStarted(false)
     }
-  }, [])
+  }, [settings.heroMode, settings.youtubeHeroUrl])
 
   useEffect(() => {
     if (gallery.length <= 1) return
@@ -98,38 +101,41 @@ export function HomeView() {
   return (
     <div>
     <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden sm:min-h-[80vh]">
-      {/* วิดีโอพื้นหลัง — iframe พร้อม ref ตลอด (มือถือตั้ง src ตอนกดปุ่ม) */}
+      {/* พื้นหลังหน้าปก: ภาพ หรือ YouTube */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* ภาพปก โชว์จนกว่าจะเริ่มวิดีโอ */}
-        {!videoStarted && (
+        {(settings.heroMode === 'image' || !videoStarted || !ytId) && (
           <img
-            src={settings.heroMode === 'image' && settings.heroImage ? settings.heroImage : ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : settings.heroImage || '/images/hero-kaaba.png'}
-            alt="กะอ์บะฮ์ มัสยิดอัลหะรอม"
+            src={
+              settings.heroImage ||
+              (ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '/images/hero-kaaba.png')
+            }
+            alt="หน้าปก"
             className="absolute inset-0 z-[1] size-full object-cover"
             onError={(e) => {
               ;(e.currentTarget as HTMLImageElement).src = '/images/hero-kaaba.png'
             }}
           />
         )}
-        <iframe
-          ref={iframeRef}
-          title="Hero video"
-          // PC: ใช้ src จาก state | มือถือ: ว่างไว้ แล้วใส่ตอนกด (gesture)
-          src={!isMobile && embedSrc ? embedSrc : undefined}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          className={`absolute border-0 ${isMobile ? 'z-[2]' : 'pointer-events-none'}`}
-          style={{
-            top: '50%',
-            left: '50%',
-            width: '100vw',
-            height: '56.25vw',
-            minHeight: '100%',
-            minWidth: '177.78vh',
-            transform: 'translate(-50%, -50%)',
-            opacity: videoStarted ? 1 : 0,
-          }}
-        />
+        {ytId && (
+          <iframe
+            ref={iframeRef}
+            title="Hero video"
+            src={!isMobile && embedSrc ? embedSrc : undefined}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className={`absolute border-0 ${isMobile ? 'z-[2]' : 'pointer-events-none'}`}
+            style={{
+              top: '50%',
+              left: '50%',
+              width: '100vw',
+              height: '56.25vw',
+              minHeight: '100%',
+              minWidth: '177.78vh',
+              transform: 'translate(-50%, -50%)',
+              opacity: videoStarted && settings.heroMode !== 'image' ? 1 : 0,
+            }}
+          />
+        )}
       </div>
 
       {/* มือถือ: ยังไม่เล่น — กดแล้วเปิดเสียง + เล่นวิดีโอ */}
@@ -203,10 +209,10 @@ export function HomeView() {
 
       {/* แกลเลอรีแทนแดชบอร์ด — มือถือ 1 ภาพ / PC 3 ภาพ เลื่อนอัตโนมัติ */}
       {gallery.length > 0 && (
-        <section className="relative z-10 mt-6 bg-background px-4 pt-2 sm:mt-8">
-          <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl border border-border/50 bg-white p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.1)] sm:rounded-[1.5rem] sm:p-4 animate-slide-up dark:bg-card">
+        <section className="relative z-10 mt-6 bg-background px-3 pt-2 sm:mt-8 sm:px-4">
+          <div className="mx-auto max-w-6xl animate-slide-up">
             {/* มือถือ: 1 ภาพ */}
-            <div className="relative aspect-[16/11] overflow-hidden rounded-xl sm:hidden">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-2xl sm:hidden">
               {gallery.map((src, i) => (
                 <img
                   key={`m-${i}`}
@@ -224,7 +230,7 @@ export function HomeView() {
                 const i = gallery.length ? (slide + offset) % gallery.length : 0
                 const src = gallery[i]
                 return (
-                  <div key={offset} className="relative aspect-[16/11] overflow-hidden rounded-xl">
+                  <div key={offset} className="relative aspect-[16/11] overflow-hidden rounded-2xl">
                     {src && (
                       <img
                         src={src}
