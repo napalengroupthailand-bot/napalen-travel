@@ -179,7 +179,7 @@ export function HomeView() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               onClick={() => navigate('hajj')}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-luxury-gold px-8 py-3.5 font-semibold text-deep-blue shadow-lg shadow-luxury-gold/20 transition-all duration-200 hover:brightness-110 hover:scale-[1.03] active:scale-95 sm:w-auto animate-float-up"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-royal-blue px-8 py-3.5 font-semibold text-white shadow-lg shadow-royal-blue/25 transition-all duration-200 hover:brightness-110 hover:scale-[1.03] active:scale-95 sm:w-auto animate-float-up"
             >
               สมัครฮัจญ์
               <ArrowRight className="size-4" />
@@ -203,10 +203,10 @@ export function HomeView() {
 
       {/* แกลเลอรีแทนแดชบอร์ด — มือถือ 1 ภาพ / PC 3 ภาพ เลื่อนอัตโนมัติ */}
       {gallery.length > 0 && (
-        <section className="relative z-10 -mt-8 px-4 pt-2 sm:-mt-10">
-          <div className="mx-auto max-w-5xl overflow-hidden rounded-2xl border border-white/60 bg-white/95 p-2 shadow-[0_8px_40px_rgba(10,20,40,0.12)] backdrop-blur sm:rounded-[1.5rem] sm:p-3 animate-slide-up">
+        <section className="relative z-10 mt-6 bg-background px-4 pt-2 sm:mt-8">
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl border border-border/50 bg-white p-2.5 shadow-[0_8px_40px_rgba(10,20,40,0.1)] sm:rounded-[1.5rem] sm:p-4 animate-slide-up dark:bg-card">
             {/* มือถือ: 1 ภาพ */}
-            <div className="relative aspect-[16/10] overflow-hidden rounded-xl sm:hidden">
+            <div className="relative aspect-[16/11] overflow-hidden rounded-xl sm:hidden">
               {gallery.map((src, i) => (
                 <img
                   key={`m-${i}`}
@@ -219,12 +219,12 @@ export function HomeView() {
               ))}
             </div>
             {/* PC: 3 ภาพ */}
-            <div className="hidden gap-2 sm:grid sm:grid-cols-3">
+            <div className="hidden gap-3 sm:grid sm:grid-cols-3">
               {[0, 1, 2].map((offset) => {
                 const i = gallery.length ? (slide + offset) % gallery.length : 0
                 const src = gallery[i]
                 return (
-                  <div key={offset} className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                  <div key={offset} className="relative aspect-[16/11] overflow-hidden rounded-xl">
                     {src && (
                       <img
                         src={src}
@@ -256,9 +256,9 @@ export function HomeView() {
       )}
 
       {/* เครื่องมือ — ไอคอนใหญ่ สีดำเรียบ */}
-      <section className="mx-auto max-w-lg px-3 pt-6 sm:px-4">
-        <div className="soft-card relative px-2 py-3 sm:px-4 sm:py-4 animate-scale-in">
-          <div className="grid grid-cols-5 gap-1 sm:gap-2 stagger">
+      <section className="mx-auto max-w-xl px-3 pt-10 sm:px-4 sm:pt-12">
+        <div className="soft-card relative px-3 py-4 sm:px-5 sm:py-5 animate-scale-in">
+          <div className="grid grid-cols-5 gap-1.5 sm:gap-3 stagger">
             {[
               { view: 'qibla' as const, label: 'กิบลัต', icon: Compass },
               { view: 'tasbih' as const, label: 'ตัสบีห์', icon: CircleDot },
@@ -272,10 +272,10 @@ export function HomeView() {
                 onClick={(e) => { tapFeedback(e); navigate(tool.view) }}
                 className="flex flex-col items-center gap-1.5 py-1 pressable"
               >
-                <span className="flex size-12 items-center justify-center rounded-2xl bg-black/[0.04] text-deep-blue transition-transform duration-200 active:scale-90 sm:size-14">
-                  <tool.icon className="size-6 text-deep-blue sm:size-7" strokeWidth={1.75} />
+                <span className="flex size-14 items-center justify-center rounded-2xl bg-royal-blue/8 text-deep-blue transition-transform duration-200 active:scale-90 sm:size-16">
+                  <tool.icon className="size-7 text-deep-blue sm:size-8" strokeWidth={1.75} />
                 </span>
-                <span className="text-[10px] font-semibold text-deep-blue sm:text-xs">{tool.label}</span>
+                <span className="text-[11px] font-semibold text-deep-blue sm:text-sm">{tool.label}</span>
               </button>
             ))}
           </div>
@@ -321,7 +321,7 @@ export function HomeView() {
                 <h3 className="text-2xl font-bold text-bright-sky">{s.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-bright-sky/85">{s.desc}</p>
                 <span
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-luxury-gold px-5 py-2.5 text-sm font-semibold text-deep-blue transition group-hover:brightness-110"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-royal-blue px-5 py-2.5 text-sm font-semibold text-white transition group-hover:brightness-110"
                 >
                   ดูรายละเอียด
                   <ArrowRight className="size-4" />
